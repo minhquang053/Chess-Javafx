@@ -26,4 +26,8 @@ public class ChessApplication extends Application {
     public static void switchScene() {
 
     }
+
+    public static void main(String[] args) {
+        launch();
+    }
 }
