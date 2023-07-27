@@ -2,18 +2,409 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="818.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yelaco.chessgui.ChessController">
    <children>
-      <ButtonBar prefHeight="40.0" prefWidth="200.0">
-        <buttons>
-          <Button mnemonicParsing="false" text="Button" />
-        </buttons>
-      </ButtonBar>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" />
-      <Pane prefHeight="200.0" prefWidth="200.0" />
+      <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-border-color: black;">
+         <children>
+            <Button mnemonicParsing="false" text="Button" />
+            <Button mnemonicParsing="false" text="Button" />
+            <Button mnemonicParsing="false" text="Button" />
+            <Button mnemonicParsing="false" text="Button" />
+            <Button mnemonicParsing="false" text="Button" />
+            <Button mnemonicParsing="false" text="Button" />
+         </children>
+      </VBox>
+      <AnchorPane fx:id="apane" prefHeight="800.0" prefWidth="800.0">
+         <children>
+            <GridPane fx:id="gpane" layoutY="1.0" prefHeight="800.0" prefWidth="800.0" style="-fx-border-color: black;">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <BorderPane fx:id="a8" prefHeight="200.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                     <center>
+                        <ImageView fx:id="iv07" fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/rook1.png" />
+                           </image></ImageView>
+                     </center>
+                  </BorderPane>
+                  <BorderPane fx:id="b8" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/knight1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="c8" prefHeight="130.0" prefWidth="124.0" GridPane.columnIndex="2">
+                     <center>
+                        <ImageView fx:id="iv27" fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/bishop1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="d8" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="3">
+                     <center>
+
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/queen1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="e8" prefHeight="79.0" prefWidth="62.0" GridPane.columnIndex="4">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/king1.png" />
+                           </image></ImageView>
+                     </center>
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin></BorderPane>
+                  <BorderPane fx:id="f8" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="5">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/bishop1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="g8" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="6">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/knight1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="h8" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="7">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/rook1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="a7" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.rowIndex="1">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="b7" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="c7" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="d7" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="e7" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="4" GridPane.rowIndex="1">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="f7" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="1">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="g7" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="6" GridPane.rowIndex="1">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="h7" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="1">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn1.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="a6" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="b6" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="c6" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="d6" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="e6" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="2">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="f6" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="5" GridPane.rowIndex="2">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="g6" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="6" GridPane.rowIndex="2">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="h6" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="7" GridPane.rowIndex="2">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="a5" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.rowIndex="3">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="b5" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="98.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="c5" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="d5" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="e5" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="4" GridPane.rowIndex="3">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="f5" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="3">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="g5" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="6" GridPane.rowIndex="3">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="h5" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="3">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="a4" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="4">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="98.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="b4" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="c4" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="d4" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="3" GridPane.rowIndex="4">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="e4" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="4">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="f4" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="5" GridPane.rowIndex="4">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="g4" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="6" GridPane.rowIndex="4">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="h4" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="7" GridPane.rowIndex="4">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="a3" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="b3" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="c3" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="d3" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="5">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="e3" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="4" GridPane.rowIndex="5">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="f3" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="5">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="g3" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="6" GridPane.rowIndex="5">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="h3" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="5">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER" />
+                     </center></BorderPane>
+                  <BorderPane fx:id="a2" prefHeight="200.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="b2" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="c2" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="d2" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="3" GridPane.rowIndex="6">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="e2" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="6">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="f2" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="5" GridPane.rowIndex="6">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="g2" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="6" GridPane.rowIndex="6">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="h2" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="7" GridPane.rowIndex="6">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/pawn2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="a1" prefHeight="93.0" prefWidth="100.0" style="-fx-background-color: black;" GridPane.rowIndex="7">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/rook2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="b1" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/knight2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="c1" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="2" GridPane.rowIndex="7">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/bishop2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="d1" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="7">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/queen2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="e1" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="4" GridPane.rowIndex="7">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/king2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="f1" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="7">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/bishop2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="g1" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="6" GridPane.rowIndex="7">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/knight2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+                  <BorderPane fx:id="h1" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="7">
+                     <center>
+                        <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
+                           <image>
+                              <Image url="@img/rook2.png" />
+                           </image></ImageView>
+                     </center></BorderPane>
+               </children>
+            </GridPane>
+         </children></AnchorPane>
+      <BorderPane prefHeight="800.0" prefWidth="320.0" style="-fx-border-color: black;" />
    </children>
    <opaqueInsets>
       <Insets />

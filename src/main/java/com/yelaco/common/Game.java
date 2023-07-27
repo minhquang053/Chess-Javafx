@@ -89,6 +89,10 @@ public class Game {
         return this.currentTurn;
     }
 
+    public ArrayList<Move> getMovesPlayed() {
+        return movesPlayed;
+    }
+
     private boolean kingInDanger(boolean isWhite) {
         updateTwokings();
         Spot spotKing;
@@ -215,12 +219,12 @@ public class Game {
         int bey = yKing;
         if (i < bex) {
             bex--;
-        } else {
+        } else if (i > bex){
             bex++;
         }
         if (j < bey) {
             bey--;
-        } else {
+        } else if (j > bey){
             bey++;
         }
 
@@ -252,6 +256,9 @@ public class Game {
                     for (int y = 0; j < 8; j++) {
                         var box = board.getBox(x, y);
                         var piece = box.getPiece();
+                        if (piece == null) {
+                            continue;
+                        }
                         if (piece.isWhite() != king.isWhite()) {
                             continue;
                         }
@@ -287,6 +294,7 @@ public class Game {
 
         // check valid player
         if ( player != currentTurn || (srcPiece.isWhite() != player.isWhiteSide()) ) {
+            System.out.print("Wrong turn -> ");
             return false;
         }
 
@@ -324,15 +332,20 @@ public class Game {
 
             if (move.getEnd().getY() == 7) {
                 srcPiece = new Queen(true);
+                move.setPromotion(true);
             }
             if (move.getEnd().getY() == 0) {
                 srcPiece = new Queen(false);
+                move.setPromotion(true);
             }
 
             // En passant
             if (move.getEnd().getX() != move.getStart().getX() && move.getEnd().getPiece() == null) {
                 try {
-                    board.getBox(move.getEnd().getX(), move.getStart().getY()).setPiece(null);
+                    var spotKilled = board.getBox(move.getEnd().getX(), move.getStart().getY());
+                    spotKilled.setPiece(null);
+                    move.setEnpassant(true);
+                    move.setSpotKilled(spotKilled);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -348,11 +361,16 @@ public class Game {
                 if (move.getEnd().getX() == 0) {
                     board.getBox(2, move.getEnd().getY()).setPiece(srcPiece);
                     board.getBox(3, move.getEnd().getY()).setPiece(dstPiece);
+                    move.setRookCastled(board.getBox(0, move.getEnd().getY()), board.getBox(3, move.getEnd().getY()));
+                    move.setEnd(board.getBox(2, move.getEnd().getY()));
                 } else if (move.getEnd().getX() == 7) {
                     board.getBox(6, move.getEnd().getY()).setPiece(srcPiece);
                     board.getBox(5, move.getEnd().getY()).setPiece(dstPiece);
+                    move.setRookCastled(board.getBox(7, move.getEnd().getY()), board.getBox(5, move.getEnd().getY()));
+                    move.setEnd(board.getBox(6, move.getEnd().getY()));
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         } else {

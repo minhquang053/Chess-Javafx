@@ -53,6 +53,11 @@ public class Pawn extends Piece {
         }
 
         // check valid move
+        if ( (start.getPiece().isWhite() && start.getY() > end.getY())
+                || ((!start.getPiece().isWhite()) && start.getY() < end.getY()) ) {
+            return false;
+        }
+
         if (Math.abs(end.getX() - start.getX()) > 1
                 || Math.abs(end.getY() - start.getY()) > 2
                 || Math.abs(end.getY() - start.getY()) == 0) {
