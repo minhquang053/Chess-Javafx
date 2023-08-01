@@ -68,10 +68,21 @@ public class Pawn extends Piece {
         // (Not including enpassant yet)
         if (end.getX() == start.getX()) {
             // so this pawn won't be able to move 2 step up anymore
-            if (Math.abs(end.getY() - start.getY()) == 2 && !initMoved) {
-                return true;
+            if (end.getPiece() != null) {
+                return false;
             }
-            return end.getPiece() == null;
+            if (Math.abs(end.getY() - start.getY()) == 2) {
+                try {
+                    var direction = (end.getY() - start.getY()) / 2;
+                    if (board.getBox(start.getX(), start.getY() + direction).getPiece() != null) {
+                        return false;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return !initMoved;
+            }
+            return true;
         } else {
             if (Math.abs(end.getY() - start.getY()) == 2) {
                 return false;

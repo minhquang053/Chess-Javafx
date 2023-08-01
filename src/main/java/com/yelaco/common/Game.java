@@ -76,7 +76,40 @@ public class Game {
         return this.status;
     }
 
+    public ArrayList<String> getAvailiableMove(int mX, int mY) {
+        ArrayList<String> availMove = new ArrayList<>();
+        try {
+            var startSpot = board.getBox(mX, mY);
+            var piece = startSpot.getPiece();
+            if (piece == null) {
+                return availMove;
+            }
+            Piece oldPiece = null;
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    var endSpot = board.getBox(i, j);
+                    if (piece.canMove(board, startSpot, endSpot)) {
+                        oldPiece = endSpot.getPiece();
+                        startSpot.setPiece(null);
+                        endSpot.setPiece(piece);
+                        if (!kingInDanger(piece.isWhite())) {
+                            availMove.add(String.format("%d%d", i, j));
+                        }
+                        startSpot.setPiece(piece);
+                        endSpot.setPiece(oldPiece);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return availMove;
+    }
+
     public Player getCurrentTurn() {
+        if (isStalemate()) {
+            setStatus(GameStatus.STALEMATE);
+        }
         if (kingInDanger(currentTurn.isWhiteSide) && kingInCheckmate(currentTurn.isWhiteSide)) {
             if (currentTurn.isWhiteSide) {
                 System.out.println("- White king is checkmated -");
@@ -91,6 +124,32 @@ public class Game {
 
     public ArrayList<Move> getMovesPlayed() {
         return movesPlayed;
+    }
+
+    private boolean isStalemate() {
+        ArrayList<String> pieceMoves = null;
+        Piece piece = null;
+        try {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    piece = board.getBox(i, j).getPiece();
+                    if (piece == null) {
+                        continue;
+                    }
+                    if (piece.isWhite() != currentTurn.isWhiteSide()) {
+                        continue;
+                    }
+                    pieceMoves = getAvailiableMove(i, j);
+                    if (!pieceMoves.isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+
     }
 
     private boolean kingInDanger(boolean isWhite) {
@@ -250,10 +309,11 @@ public class Game {
         }
 
         // Check chockablock
+        System.out.println(inBetweens.size());
         try {
             for (Spot theSpot : inBetweens) {
-                for (int x = 0; i < 8; i++) {
-                    for (int y = 0; j < 8; j++) {
+                for (int x = 0; x < 8; x++) {
+                    for (int y = 0; y < 8; y++) {
                         var box = board.getBox(x, y);
                         var piece = box.getPiece();
                         if (piece == null) {
@@ -277,36 +337,39 @@ public class Game {
         return true;
     }
 
-    public boolean playerMove(Player player, int startX, int startY, int endX, int endY) throws Exception {
+    public MoveStatus playerMove(Player player, int startX, int startY, int endX, int endY) throws Exception {
         Spot startBox = board.getBox(startX, startY);
         Spot endBox = board.getBox(endX, endY);
         Move move = new Move(player, startBox, endBox);
         return this.makeMove(move, player);
     }
 
-    private boolean makeMove(Move move, Player player) {
+    private MoveStatus makeMove(Move move, Player player) {
         Piece srcPiece = move.getStart().getPiece();
         if (srcPiece == null) {
-            return false;
+            return MoveStatus.NULL_PIECE;
         }
+        Piece dstPiece = move.getEnd().getPiece();
 
         System.out.println("> " + srcPiece.getClass().getSimpleName() + " moved");
 
         // check valid player
         if ( player != currentTurn || (srcPiece.isWhite() != player.isWhiteSide()) ) {
             System.out.print("Wrong turn -> ");
-            return false;
+            return MoveStatus.WRONG_TURN;
         }
 
         // check valid move
         if (!srcPiece.canMove(board, move.getStart(), move.getEnd())) {
             System.out.print("Can't move here -> ");
-            return false;
+            if (dstPiece != null && srcPiece.isWhite() == dstPiece.isWhite()) {
+                return MoveStatus.SAME_SIDE;
+            }
+            return MoveStatus.CANT_MOVE;
         }
 
         move.setPieceMoved(srcPiece);
 
-        Piece dstPiece = move.getEnd().getPiece();
         if (dstPiece != null) {
             move.setPieceKilled(dstPiece);
         }
@@ -371,7 +434,7 @@ public class Game {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return false;
+                return MoveStatus.CANT_MOVE;
             }
         } else {
             move.getEnd().setPiece(srcPiece);
@@ -380,7 +443,7 @@ public class Game {
                 move.getStart().setPiece(srcPiece);
                 move.getEnd().setPiece(dstPiece);
                 System.out.print("King is checked --> ");
-                return false;
+                return MoveStatus.CANT_MOVE;
             }
         }
 
@@ -390,6 +453,10 @@ public class Game {
             if (lastPieceMove instanceof Pawn && ((Pawn) lastPieceMove).getCanEnpassant()) {
                 ((Pawn) lastPieceMove).setCanEnpassant(false);
             }
+        }
+
+        if (kingInDanger(!srcPiece.isWhite())) {
+            move.setCheckMove(true);
         }
 
         movesPlayed.add(move);
@@ -410,6 +477,6 @@ public class Game {
             this.currentTurn = players[0];
         }
 
-        return true;
+        return MoveStatus.SUCCESS;
     }
 }

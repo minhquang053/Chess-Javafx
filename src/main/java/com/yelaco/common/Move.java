@@ -12,6 +12,7 @@ public class Move {
     private Spot spotKilled;
     private Spot[] rookCastle;
     private boolean isCastlingMove = false;
+    private boolean isCheckMove = false;
     private boolean isEnpassant = false;
     private boolean isPromotion = false;
 
@@ -42,6 +43,9 @@ public class Move {
         this.pieceMoved = pieceMoved;
     }
 
+    public Piece getPieceKilled() {
+        return this.pieceKilled;
+    }
     public void setPieceKilled(Piece pieceKilled) {
         this.pieceKilled = pieceKilled;
     }
@@ -52,6 +56,14 @@ public class Move {
 
     public void setCastlingMove(boolean isCastlingMove) {
         this.isCastlingMove = isCastlingMove;
+    }
+
+    public boolean isCheckMove() {
+        return this.isCheckMove;
+    }
+
+    public void setCheckMove(boolean isCheckMove) {
+        this.isCheckMove = isCheckMove;
     }
 
     public boolean isEnpassant() {

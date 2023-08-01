@@ -1,25 +1,20 @@
 package com.yelaco.chessgui;
 
-import com.yelaco.common.Game;
-import com.yelaco.common.GameStatus;
-import com.yelaco.common.Player;
-import com.yelaco.common.HumanPlayer;
+import com.yelaco.common.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class ChessController implements Initializable {
@@ -27,6 +22,11 @@ public class ChessController implements Initializable {
     private Player currentPlayer;
     private boolean makingMove = false;
     private ImageView movingPiece = null;
+    private String rootPath = null;
+    private String delimiter = null;
+
+    private ArrayList<ImageView> showMoveImgView;
+    private HashMap<BorderPane, String> canMovePane;
     private BorderPane[][] spots = new BorderPane[8][8];
 
     @FXML
@@ -42,18 +42,88 @@ public class ChessController implements Initializable {
         resultDialog.showAndWait();
     }
 
+    private void playSound(SoundEffect gameSound) {
+        ChessAudio.playSound(gameSound);
+    }
+
+    private void makeMoveSound(Move move) {
+        if (game.isOver()) {
+            switch (game.getStatus()) {
+                case STALEMATE -> {
+                    playSound(SoundEffect.STALEMATE);
+                }
+                case BLACK_WIN, WHITE_WIN -> {
+                    playSound(SoundEffect.CHECKMATE);
+                }
+            }
+            return;
+        }
+        if (move.isCheckMove()) {
+            playSound(SoundEffect.CHECK);
+        } else if (move.isCastlingMove()){
+            playSound(SoundEffect.CASTLING);
+        } else if (move.getPieceKilled() != null || move.isEnpassant()){
+            playSound(SoundEffect.CAPTURE_PIECE);
+        } else {
+            playSound(SoundEffect.MAKE_MOVE);
+        }
+    }
+
+    private void showAvailableMoves(boolean isShow) {
+        if (isShow) {
+            Image moveDot = new Image(rootPath + delimiter + "img" + delimiter + "moveDot.png");
+            String movePane = movingPiece.getParent().getId();
+
+            int mX = movePane.charAt(0) - 'a';
+            int mY = movePane.charAt(1) - '0' - 1;
+            var availMoves = game.getAvailiableMove(mX, mY);
+            for (String move: availMoves) {
+                var bpane = (BorderPane) spots[move.charAt(0) - '0'][move.charAt(1) - '0'];
+                var moveImgView = (ImageView) spots[move.charAt(0) - '0'][move.charAt(1) - '0'].getCenter();
+                if (moveImgView.getImage() == null) {
+                    moveImgView.setImage(moveDot);
+                } else {
+                    canMovePane.put(bpane, bpane.getStyle());
+                    bpane.setStyle("-fx-background-color:green");
+                }
+                showMoveImgView.add(moveImgView);
+            }
+        } else {
+            for (ImageView imgView : showMoveImgView) {
+                if (imgView.getImage().getUrl().contains("moveDot.png")) imgView.setImage(null);
+            }
+            for (BorderPane bpane: canMovePane.keySet()) {
+                var prevStyle = (String) canMovePane.get(bpane);
+                bpane.setStyle(prevStyle);
+            }
+            showMoveImgView.clear();
+            canMovePane.clear();
+        }
+    }
+
     public void processMove(MouseEvent event) {
         var imgView = (ImageView) event.getSource();
         var pane = (BorderPane) imgView.getParent();
 
         // if you pick a piece to move, the next click must be the spot you want to move to
         if (makingMove) {
+            showAvailableMoves(false);
+
             try {
                 var move = filterInput(movingPiece.getParent().getId(), pane.getId());
-                if (game.playerMove(currentPlayer, move[0], move[1], move[2], move[3])) {
+                var moveStat = game.playerMove(currentPlayer, move[0], move[1], move[2], move[3]);
+
+                if (moveStat == MoveStatus.SUCCESS) {
+                    currentPlayer = game.getCurrentTurn();
+
+
                     // move piece
                     var movesPlayed = game.getMovesPlayed();
                     var ltmove = movesPlayed.get(movesPlayed.size()-1);
+
+                    // audio
+                    makeMoveSound(ltmove);
+
                     var startView = (ImageView) spots[ltmove.getStart().getX()][ltmove.getStart().getY()].getCenter();
                     var endView = (ImageView) spots[ltmove.getEnd().getX()][ltmove.getEnd().getY()].getCenter();
 
@@ -73,33 +143,43 @@ public class ChessController implements Initializable {
                         if (ltmove.getPieceMoved().isWhite()) {
                             pieceImg = "queen2.png";
                         }
-                        var rootpath = new File(endView.getImage().getUrl()).getParent();
-                        if (rootpath.contains("\\")) {
-                            endView.setImage(new Image(rootpath + "\\" + pieceImg));
-                        } else {
-                            endView.setImage(new Image(rootpath + "/" + pieceImg));
-                        }
+                        endView.setImage(new Image(rootPath + delimiter + "img" + delimiter + pieceImg));
                     }
+                } else if (moveStat == MoveStatus.SAME_SIDE) {
+                    movingPiece = imgView;
+                    showAvailableMoves(true);
+                    return;
                 } else {
                     System.out.println("Invalid moved from " + move[0] + move[1] + " to " + move[2] + move[3]);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-                makingMove = false;
-                movingPiece = null;
             }
+            makingMove = false;
+            movingPiece = null;
 
-            currentPlayer = game.getCurrentTurn();
             if (game.isOver()) {
                 System.out.println("Game ended with " + game.getStatus());
                 apane.setDisable(true);
                 displayResult();
             }
-        } else if (imgView.getImage() != null){
+        } else {
+            Image img = imgView.getImage();
+            if (img == null) {
+                return;
+            }
+            String pieceName = new File(img.getUrl()).getName();
+            if ( (currentPlayer.isWhiteSide() && pieceName.contains("1.png"))
+                    || (!currentPlayer.isWhiteSide() && pieceName.contains("2.png")) ) {
+                return;
+            }
+            if (imgView.getImage() == null) {
+                return;
+            }
             // wait for the end spot
             makingMove = true;
             movingPiece = imgView;
+            showAvailableMoves(true);
         }
     }
 
@@ -135,5 +215,19 @@ public class ChessController implements Initializable {
                 spots[i][j] = (BorderPane) gpane.getChildren().get(idx++);
             }
         }
+
+        showMoveImgView = new ArrayList<>();
+        canMovePane = new HashMap<>();
+
+        rootPath = new File(url.toString()).getParent();
+        if (rootPath.contains("\\")) {
+            delimiter = "\\";
+        } else {
+            delimiter = "/";
+        }
+
+        ChessAudio.setup(rootPath);
+
+        playSound(SoundEffect.START_GAME);
     }
 }

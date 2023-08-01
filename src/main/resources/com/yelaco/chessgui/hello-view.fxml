@@ -17,9 +17,9 @@
             <Button mnemonicParsing="false" text="Button" />
          </children>
       </VBox>
-      <AnchorPane fx:id="apane" prefHeight="800.0" prefWidth="800.0">
+      <AnchorPane fx:id="apane" prefHeight="800.0" prefWidth="800.0" style="-fx-border-color: grey;">
          <children>
-            <GridPane fx:id="gpane" layoutY="1.0" prefHeight="800.0" prefWidth="800.0" style="-fx-border-color: black;">
+            <GridPane fx:id="gpane" layoutY="1.0" prefHeight="800.0" prefWidth="802.0" style="-fx-border-color: grey;">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -98,7 +98,7 @@
                               <Image url="@img/knight1.png" />
                            </image></ImageView>
                      </center></BorderPane>
-                  <BorderPane fx:id="h8" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" GridPane.columnIndex="7">
+                  <BorderPane fx:id="h8" prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: black;" GridPane.columnIndex="7">
                      <center>
                         <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#processMove" pickOnBounds="true" BorderPane.alignment="CENTER">
                            <image>
@@ -404,7 +404,13 @@
                </children>
             </GridPane>
          </children></AnchorPane>
-      <BorderPane prefHeight="800.0" prefWidth="320.0" style="-fx-border-color: black;" />
+      <BorderPane prefHeight="818.0" prefWidth="300.0" style="-fx-border-color: black;">
+         <top>
+            <BorderPane prefHeight="60.0" prefWidth="318.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER" />
+         </top>
+         <bottom>
+            <BorderPane prefHeight="60.0" prefWidth="308.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER" />
+         </bottom></BorderPane>
    </children>
    <opaqueInsets>
       <Insets />
