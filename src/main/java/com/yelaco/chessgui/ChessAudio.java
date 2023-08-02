@@ -19,7 +19,7 @@ public class ChessAudio {
         start = new AudioClip(path + "/start.mp3");
         capture = new AudioClip(path + "/capture.mp3");
         castling = new AudioClip(path + "/castling.mp3");
-        promotion = new AudioClip(path + "/promotion.mp3");
+        promotion = new AudioClip(path + "/promote.mp3");
         check = new AudioClip(path + "/check.mp3");
         gameover = new AudioClip(path + "/gameover.mp3");
         stallmate = new AudioClip(path + "/stalemate.mp3");

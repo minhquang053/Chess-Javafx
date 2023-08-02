@@ -419,16 +419,13 @@
                   </Label>
                </left>
                <center>
-                  <Label contentDisplay="CENTER" prefHeight="44.0" prefWidth="209.0" text="Player 2" textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER">
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="44.0" prefWidth="209.0" text="Player 2" textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets right="10.0" />
                      </BorderPane.margin>
                      <font>
                         <Font name="JetBrains Mono Regular" size="18.0" />
                      </font>
-                     <padding>
-                        <Insets left="30.0" />
-                     </padding>
                   </Label>
                </center></BorderPane>
          </top>
@@ -445,13 +442,10 @@
                   </Label>
                </left>
                <right>
-                  <Label contentDisplay="CENTER" prefHeight="44.0" prefWidth="164.0" text="Player 1" textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER">
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="44.0" prefWidth="164.0" text="Player 1" textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets right="10.0" />
                      </BorderPane.margin>
-                     <padding>
-                        <Insets left="30.0" />
-                     </padding>
                      <font>
                         <Font name="JetBrains Mono Regular" size="18.0" />
                      </font>
