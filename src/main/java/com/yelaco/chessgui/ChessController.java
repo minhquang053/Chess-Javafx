@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -13,12 +14,10 @@ import javafx.scene.layout.*;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ChessController implements Initializable {
-    private Game game;
+    public Game game;
     private Player currentPlayer;
     private boolean makingMove = false;
     private ImageView movingPiece = null;
@@ -28,11 +27,22 @@ public class ChessController implements Initializable {
     private ArrayList<ImageView> showMoveImgView;
     private HashMap<BorderPane, String> canMovePane;
     private BorderPane[][] spots = new BorderPane[8][8];
+    private ChessTimer task;
+    private Timer timer;
 
     @FXML
     private AnchorPane apane;
     @FXML
     private GridPane gpane;
+
+    // player white clock
+    @FXML
+    public Label p1clock;
+
+    //player black clock
+    @FXML
+    public Label p2clock;
+
 
     public void displayResult() {
         var resultDialog = new Dialog<String>();
@@ -40,6 +50,14 @@ public class ChessController implements Initializable {
         resultDialog.setContentText("Game ended with " + game.getStatus());
         resultDialog.getDialogPane().getButtonTypes().add(new ButtonType("OK", ButtonBar.ButtonData.OK_DONE));
         resultDialog.showAndWait();
+    }
+
+    public void displayGameOver() {
+        System.out.println("Game ended with " + game.getStatus());
+        apane.setDisable(true);
+        timer.cancel();
+        timer.purge();
+        displayResult();
     }
 
     private void playSound(SoundEffect gameSound) {
@@ -115,6 +133,7 @@ public class ChessController implements Initializable {
 
                 if (moveStat == MoveStatus.SUCCESS) {
                     currentPlayer = game.getCurrentTurn();
+                    task.switchTurn(currentPlayer.isWhiteSide);
 
 
                     // move piece
@@ -159,9 +178,7 @@ public class ChessController implements Initializable {
             movingPiece = null;
 
             if (game.isOver()) {
-                System.out.println("Game ended with " + game.getStatus());
-                apane.setDisable(true);
-                displayResult();
+                displayGameOver();
             }
         } else {
             Image img = imgView.getImage();
@@ -229,5 +246,9 @@ public class ChessController implements Initializable {
         ChessAudio.setup(rootPath);
 
         playSound(SoundEffect.START_GAME);
+
+        timer = new Timer();
+        task = new ChessTimer(600,this);
+        timer.schedule(task, 500, 1000 );
     }
 }

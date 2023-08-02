@@ -7,9 +7,17 @@ import java.util.ArrayList;
 
 public class King extends Piece {
     private boolean castlingDone = false;
+    private boolean inCheck = false;
 
     public King(boolean isWhite) {
        super(isWhite);
+    }
+    public boolean inCheck() {
+        return this.inCheck;
+    }
+
+    public void setInCheck(boolean inCheck) {
+        this.inCheck = inCheck;
     }
 
     public boolean isCastlingDone() {
@@ -76,6 +84,14 @@ public class King extends Piece {
         }
 
         if (end.getY() != start.getY()) {
+            return false;
+        }
+
+        if (inCheck) {
+            return false;
+        }
+
+        if (!isCastlingMove(start, end)) {
             return false;
         }
 

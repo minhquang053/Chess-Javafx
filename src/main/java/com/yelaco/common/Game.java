@@ -89,6 +89,12 @@ public class Game {
                 for (int j = 0; j < 8; j++) {
                     var endSpot = board.getBox(i, j);
                     if (piece.canMove(board, startSpot, endSpot)) {
+                        if (piece instanceof King) {
+                            System.out.println(((King) piece).inCheck());
+                            if (endSpot.getPiece() != null) {
+                                System.out.println(endSpot.getPiece().getClass().getSimpleName());
+                            }
+                        }
                         oldPiece = endSpot.getPiece();
                         startSpot.setPiece(null);
                         endSpot.setPiece(piece);
@@ -110,13 +116,20 @@ public class Game {
         if (isStalemate()) {
             setStatus(GameStatus.STALEMATE);
         }
-        if (kingInDanger(currentTurn.isWhiteSide) && kingInCheckmate(currentTurn.isWhiteSide)) {
-            if (currentTurn.isWhiteSide) {
-                System.out.println("- White king is checkmated -");
-                setStatus(GameStatus.BLACK_WIN);
+        if (kingInDanger(currentTurn.isWhiteSide)) {
+            if (currentTurn.isWhiteSide()) {
+                ((King) twoKings[0].getPiece()).setInCheck(true);
             } else {
-                System.out.println("- Black king is Checkmated -");
-                setStatus(GameStatus.WHITE_WIN);
+                ((King) twoKings[1].getPiece()).setInCheck(true);
+            }
+            if (kingInCheckmate(currentTurn.isWhiteSide())) {
+                if (currentTurn.isWhiteSide) {
+                    System.out.println("- White king is checkmated -");
+                    setStatus(GameStatus.BLACK_WIN);
+                } else {
+                    System.out.println("- Black king is Checkmated -");
+                    setStatus(GameStatus.WHITE_WIN);
+                }
             }
         }
         return this.currentTurn;

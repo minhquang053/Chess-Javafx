@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="818.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yelaco.chessgui.ChessController">
    <children>
@@ -406,10 +407,56 @@
          </children></AnchorPane>
       <BorderPane prefHeight="818.0" prefWidth="300.0" style="-fx-border-color: black;">
          <top>
-            <BorderPane prefHeight="60.0" prefWidth="318.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER" />
+            <BorderPane prefHeight="60.0" prefWidth="318.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER">
+               <left>
+                  <Label fx:id="p2clock" alignment="CENTER" prefHeight="44.0" prefWidth="100.0" style="-fx-border-color: black;" text="10:00" textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets left="20.0" />
+                     </BorderPane.margin>
+                     <font>
+                        <Font name="Arial Black" size="20.0" />
+                     </font>
+                  </Label>
+               </left>
+               <center>
+                  <Label contentDisplay="CENTER" prefHeight="44.0" prefWidth="209.0" text="Player 2" textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets right="10.0" />
+                     </BorderPane.margin>
+                     <font>
+                        <Font name="JetBrains Mono Regular" size="18.0" />
+                     </font>
+                     <padding>
+                        <Insets left="30.0" />
+                     </padding>
+                  </Label>
+               </center></BorderPane>
          </top>
          <bottom>
-            <BorderPane prefHeight="60.0" prefWidth="308.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER" />
+            <BorderPane prefHeight="60.0" prefWidth="308.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER">
+               <left>
+                  <Label fx:id="p1clock" alignment="CENTER" contentDisplay="CENTER" prefHeight="44.0" prefWidth="100.0" style="-fx-border-color: black;" text="10:00" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets left="20.0" />
+                     </BorderPane.margin>
+                     <font>
+                        <Font name="Arial Black" size="20.0" />
+                     </font>
+                  </Label>
+               </left>
+               <right>
+                  <Label contentDisplay="CENTER" prefHeight="44.0" prefWidth="164.0" text="Player 1" textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets right="10.0" />
+                     </BorderPane.margin>
+                     <padding>
+                        <Insets left="30.0" />
+                     </padding>
+                     <font>
+                        <Font name="JetBrains Mono Regular" size="18.0" />
+                     </font>
+                  </Label>
+               </right></BorderPane>
          </bottom></BorderPane>
    </children>
    <opaqueInsets>
