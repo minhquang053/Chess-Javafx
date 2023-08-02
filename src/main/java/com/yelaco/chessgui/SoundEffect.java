@@ -6,6 +6,7 @@ public enum SoundEffect {
     CHECK,
     START_GAME,
     CASTLING,
+    PROMOTION,
     GAME_OVER,
     STALEMATE,
     CHECKMATE,

@@ -7,6 +7,7 @@ public class ChessAudio {
     private static AudioClip start = null;
     private static AudioClip capture = null;
     private static AudioClip castling = null;
+    private static AudioClip promotion = null;
     private static AudioClip check = null;
     private static AudioClip gameover = null;
     private static AudioClip stallmate = null;
@@ -18,6 +19,7 @@ public class ChessAudio {
         start = new AudioClip(path + "/start.mp3");
         capture = new AudioClip(path + "/capture.mp3");
         castling = new AudioClip(path + "/castling.mp3");
+        promotion = new AudioClip(path + "/promotion.mp3");
         check = new AudioClip(path + "/check.mp3");
         gameover = new AudioClip(path + "/gameover.mp3");
         stallmate = new AudioClip(path + "/stalemate.mp3");
@@ -40,6 +42,9 @@ public class ChessAudio {
             }
             case CASTLING -> {
                 castling.play();
+            }
+            case PROMOTION -> {
+                promotion.play();
             }
             case CHECKMATE -> {
                 checkmate.play();
