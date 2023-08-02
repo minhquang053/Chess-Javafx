@@ -80,9 +80,11 @@ public class ChessController implements Initializable {
             playSound(SoundEffect.CHECK);
         } else if (move.isCastlingMove()){
             playSound(SoundEffect.CASTLING);
-        } else if (move.getPieceKilled() != null || move.isEnpassant()){
+        } else if (move.isPromotion()){
+            playSound(SoundEffect.PROMOTION);
+        } else if (move.getPieceKilled() != null || move.isEnpassant()) {
             playSound(SoundEffect.CAPTURE_PIECE);
-        } else {
+        }else {
             playSound(SoundEffect.MAKE_MOVE);
         }
     }
