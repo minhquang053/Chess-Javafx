@@ -2,6 +2,7 @@ package com.yelaco.chessgui;
 
 import com.yelaco.common.*;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -13,16 +14,19 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-public class ChessController implements Initializable {
+public class PlayController implements Initializable {
     public Game game;
     private Player currentPlayer;
     private boolean makingMove = false;
     private ImageView movingPiece = null;
     private String rootPath = null;
     private String delimiter = null;
+    private String rootPathNew = null;
+    private boolean player1;
 
     private ArrayList<ImageView> showMoveImgView;
     private HashMap<BorderPane, String> canMovePane;
@@ -43,7 +47,6 @@ public class ChessController implements Initializable {
     @FXML
     public Label p2clock;
 
-
     public void displayResult() {
         var resultDialog = new Dialog<String>();
         resultDialog.setTitle("Result");
@@ -58,6 +61,7 @@ public class ChessController implements Initializable {
         timer.cancel();
         timer.purge();
         displayResult();
+
     }
 
     private void playSound(SoundEffect gameSound) {
@@ -85,8 +89,17 @@ public class ChessController implements Initializable {
         } else if (move.getPieceKilled() != null || move.isEnpassant()) {
             playSound(SoundEffect.CAPTURE_PIECE);
         }else {
-            playSound(SoundEffect.MAKE_MOVE);
+            // due to internal logic, the current turn will be switched before making a sound
+            if (player1 != currentPlayer.isWhiteSide) {
+                playSound(SoundEffect.SELF_MOVE);
+            } else {
+                playSound(SoundEffect.OPPONENT_MOVE);
+            }
         }
+    }
+
+    private boolean isSameSide(String pieceName, boolean isWhite) {
+        return "wk.png/wq.png/wb.png/wn.png/wr.png/wp.png".contains(pieceName) == isWhite;
     }
 
     private void showAvailableMoves(boolean isShow) {
@@ -104,7 +117,7 @@ public class ChessController implements Initializable {
                     moveImgView.setImage(moveDot);
                 } else {
                     canMovePane.put(bpane, bpane.getStyle());
-                    bpane.setStyle("-fx-background-color:green");
+                    bpane.setStyle(bpane.getStyle() + "-fx-background-image: url(\"" + rootPathNew + "img/killDot.png\"); -fx-background-size: 100");
                 }
                 showMoveImgView.add(moveImgView);
             }
@@ -160,9 +173,11 @@ public class ChessController implements Initializable {
                         var spotKilled = (ImageView) spots[ltmove.getSpotKilled().getX()][ltmove.getSpotKilled().getY()].getCenter();
                         spotKilled.setImage(null);
                     } else if (ltmove.isPromotion()) {
-                        var pieceImg = "queen1.png";
+                        String pieceImg;
                         if (ltmove.getPieceMoved().isWhite()) {
-                            pieceImg = "queen2.png";
+                            pieceImg = "wq.png";
+                        } else {
+                            pieceImg = "bq.png";
                         }
                         endView.setImage(new Image(rootPath + delimiter + "img" + delimiter + pieceImg));
                     }
@@ -188,11 +203,7 @@ public class ChessController implements Initializable {
                 return;
             }
             String pieceName = new File(img.getUrl()).getName();
-            if ( (currentPlayer.isWhiteSide() && pieceName.contains("1.png"))
-                    || (!currentPlayer.isWhiteSide() && pieceName.contains("2.png")) ) {
-                return;
-            }
-            if (imgView.getImage() == null) {
+            if ( !isSameSide(pieceName, currentPlayer.isWhiteSide()) ) {
                 return;
             }
             // wait for the end spot
@@ -224,6 +235,10 @@ public class ChessController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        String[] tmp = url.toString().split("/");
+        tmp[tmp.length-1] = "";
+        rootPathNew = String.join("/", tmp);
+
         game = new Game();
         game.init(new HumanPlayer(true), new HumanPlayer(false));
         currentPlayer = game.getCurrentTurn();
@@ -252,5 +267,7 @@ public class ChessController implements Initializable {
         timer = new Timer();
         task = new ChessTimer(600,this);
         timer.schedule(task, 500, 1000 );
+
+        player1 = currentPlayer.isWhiteSide;
     }
 }

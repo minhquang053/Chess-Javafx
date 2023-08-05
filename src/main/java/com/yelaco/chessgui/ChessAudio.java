@@ -3,7 +3,8 @@ package com.yelaco.chessgui;
 import javafx.scene.media.AudioClip;
 
 public class ChessAudio {
-    private static AudioClip move = null;
+    private static AudioClip selfmove = null;
+    private static AudioClip opmove = null;
     private static AudioClip start = null;
     private static AudioClip capture = null;
     private static AudioClip castling = null;
@@ -15,7 +16,8 @@ public class ChessAudio {
 
     public static void setup(String rootPath) {
         String path = String.join("/", rootPath.split("\\\\")) + "/sfx";
-        move = new AudioClip(path + "/move.mp3");
+        selfmove = new AudioClip(path + "/move-self.mp3");
+        opmove = new AudioClip(path + "/move-opponent.mp3");
         start = new AudioClip(path + "/start.mp3");
         capture = new AudioClip(path + "/capture.mp3");
         castling = new AudioClip(path + "/castling.mp3");
@@ -28,8 +30,11 @@ public class ChessAudio {
 
     public static void playSound(SoundEffect sfx) {
         switch (sfx) {
-            case MAKE_MOVE -> {
-                move.play();
+            case OPPONENT_MOVE -> {
+                opmove.play();
+            }
+            case SELF_MOVE -> {
+                selfmove.play();
             }
             case START_GAME -> {
                 start.play();

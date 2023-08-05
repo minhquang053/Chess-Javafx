@@ -9,15 +9,13 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class ChessApplication extends Application {
-    private final int APP_WIDTH = 1200;
-    private final int APP_HEIGHT = 820;
     Game game = new Game();
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(ChessApplication.class.getResource("play-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), APP_WIDTH, APP_HEIGHT);
-        stage.setTitle("Chess");
+        FXMLLoader fxmlLoader = new FXMLLoader(ChessApplication.class.getResource("main-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
+        stage.setTitle("Chess.vn");
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();

@@ -85,24 +85,31 @@ public class Game {
                 return availMove;
             }
             Piece oldPiece = null;
+            Piece tmpPiece = null;
+            Spot tmpBox = null;
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     var endSpot = board.getBox(i, j);
                     if (piece.canMove(board, startSpot, endSpot)) {
-                        if (piece instanceof King) {
-                            System.out.println(((King) piece).inCheck());
-                            if (endSpot.getPiece() != null) {
-                                System.out.println(endSpot.getPiece().getClass().getSimpleName());
-                            }
-                        }
                         oldPiece = endSpot.getPiece();
                         startSpot.setPiece(null);
                         endSpot.setPiece(piece);
+                        if (piece instanceof Pawn && endSpot.getX() != startSpot.getX() && oldPiece == null) {
+                            tmpBox = board.getBox(endSpot.getX(), startSpot.getY());
+                            tmpPiece = tmpBox.getPiece();
+                            tmpBox.setPiece(null);
+                        }
                         if (!kingInDanger(piece.isWhite())) {
                             availMove.add(String.format("%d%d", i, j));
                         }
                         startSpot.setPiece(piece);
                         endSpot.setPiece(oldPiece);
+                        if (piece instanceof Pawn && endSpot.getX() != startSpot.getX() && oldPiece == null) {
+                            assert tmpBox != null;
+                            tmpBox.setPiece(tmpPiece);
+                            tmpBox = null;
+                            tmpPiece = null;
+                        }
                     }
                 }
             }
@@ -124,10 +131,8 @@ public class Game {
             }
             if (kingInCheckmate(currentTurn.isWhiteSide())) {
                 if (currentTurn.isWhiteSide) {
-                    System.out.println("- White king is checkmated -");
                     setStatus(GameStatus.BLACK_WIN);
                 } else {
-                    System.out.println("- Black king is Checkmated -");
                     setStatus(GameStatus.WHITE_WIN);
                 }
             }
@@ -137,6 +142,10 @@ public class Game {
 
     public ArrayList<Move> getMovesPlayed() {
         return movesPlayed;
+    }
+
+    public Move getLastMovePlayed() {
+        return movesPlayed.get(movesPlayed.size()-1);
     }
 
     private boolean isStalemate() {
@@ -201,10 +210,8 @@ public class Game {
         Spot spotKing;
         if (isWhite) {
             spotKing = twoKings[0];
-            System.out.println("* White king in Check *");
         } else {
             spotKing = twoKings[1];
-            System.out.println("* Black king in Check *");
         }
         try {
             for (int i = 0; i < 8; i++) {
@@ -322,7 +329,6 @@ public class Game {
         }
 
         // Check chockablock
-        System.out.println(inBetweens.size());
         try {
             for (Spot theSpot : inBetweens) {
                 for (int x = 0; x < 8; x++) {
@@ -364,17 +370,13 @@ public class Game {
         }
         Piece dstPiece = move.getEnd().getPiece();
 
-        System.out.println("> " + srcPiece.getClass().getSimpleName() + " moved");
-
         // check valid player
         if ( player != currentTurn || (srcPiece.isWhite() != player.isWhiteSide()) ) {
-            System.out.print("Wrong turn -> ");
             return MoveStatus.WRONG_TURN;
         }
 
         // check valid move
         if (!srcPiece.canMove(board, move.getStart(), move.getEnd())) {
-            System.out.print("Can't move here -> ");
             if (dstPiece != null && srcPiece.isWhite() == dstPiece.isWhite()) {
                 return MoveStatus.SAME_SIDE;
             }
@@ -430,7 +432,6 @@ public class Game {
 
         // Castling
         if (move.isCastlingMove()) {
-            System.out.println("King castled");
             try {
                 move.getEnd().setPiece(null);
                 move.getStart().setPiece(null);
@@ -455,7 +456,6 @@ public class Game {
             if (kingInDanger(srcPiece.isWhite())) {
                 move.getStart().setPiece(srcPiece);
                 move.getEnd().setPiece(dstPiece);
-                System.out.print("King is checked --> ");
                 return MoveStatus.CANT_MOVE;
             }
         }

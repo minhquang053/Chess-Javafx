@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yelaco.chessgui.MainController">
+   <left>
+      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="100.0" style="-fx-background-color: rgba(65,64,61,255);" BorderPane.alignment="CENTER">
+         <top>
+            <VBox fx:id="boxbtn" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="btnOffline" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" mnemonicParsing="false" onMouseClicked="#makeOfflineMatch" prefHeight="45.0" prefWidth="85.0" text="Offline" textAlignment="CENTER">
+                     <font>
+                        <Font name="JetBrains Mono Medium" size="15.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btnOnline" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" mnemonicParsing="false" prefHeight="45.0" prefWidth="85.0" text="Online" textAlignment="CENTER">
+                     <font>
+                        <Font name="JetBrains Mono Medium" size="15.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+            </VBox>
+         </top>
+         <bottom>
+            <VBox fx:id="gamebtn" alignment="CENTER" prefHeight="337.0" prefWidth="98.0" visible="false" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="btnReset" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#makeOfflineMatch" prefHeight="60.0" prefWidth="60.0">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></Button>
+                  <Button fx:id="btnHint" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0">
+                     <VBox.margin>
+                        <Insets top="20.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button fx:id="btnResign" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0">
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="20.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </VBox>
+         </bottom>
+      </BorderPane>
+   </left>
+</BorderPane>

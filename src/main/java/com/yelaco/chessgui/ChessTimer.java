@@ -1,6 +1,5 @@
 package com.yelaco.chessgui;
 
-import com.yelaco.common.Game;
 import com.yelaco.common.GameStatus;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
@@ -11,17 +10,18 @@ public class ChessTimer extends TimerTask {
     private int tw = 0;
     private int tb = 0;
     public boolean isWhite = true;
-    private ChessController cs;
+    private PlayController cs;
     private Label pwclock;
     private Label pbclock;
 
-    public ChessTimer(int totalTime, ChessController cs) {
+    public ChessTimer(int totalTime, PlayController cs) {
         this.tw = totalTime;
         this.tb = totalTime;
         this.cs = cs;
         this.pwclock = cs.p1clock;
         this.pbclock = cs.p2clock;
-        pbclock.setStyle("-fx-background-color: grey; -fx-border-color: black");
+        pwclock.setStyle("-fx-background-color:  rgba(255,255,255,255); -fx-text-fill: rgba(38,36,52,255)");
+        pbclock.setStyle("-fx-background-color:  rgba(152,152,150,255); -fx-text-fill: rgba(97,97,94,255)");
         setClock();
     }
 
@@ -47,11 +47,11 @@ public class ChessTimer extends TimerTask {
     public void switchTurn(boolean color) {
         this.isWhite = color;
         if (isWhite) {
-            pwclock.setStyle("-fx-background-color: white; -fx-border-color: black");
-            pbclock.setStyle("-fx-background-color: grey; -fx-border-color: black");
+            pwclock.setStyle("-fx-background-color:  rgba(255,255,255,255); -fx-text-fill: rgba(38,36,52,255)");
+            pbclock.setStyle("-fx-background-color:  rgba(152,152,150,255); -fx-text-fill: rgba(97,97,94,255)");
         } else {
-            pwclock.setStyle("-fx-background-color: grey; -fx-border-color: black");
-            pbclock.setStyle("-fx-background-color: white; -fx-border-color: black");
+            pwclock.setStyle("-fx-background-color:  rgba(152,152,150,255); -fx-text-fill: rgba(97,97,94,255)");
+            pbclock.setStyle("-fx-background-color:  rgba(38,36,33,255); -fx-text-fill: white");
         }
     }
 

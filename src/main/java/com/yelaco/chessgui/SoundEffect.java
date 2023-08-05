@@ -1,7 +1,8 @@
 package com.yelaco.chessgui;
 
 public enum SoundEffect {
-    MAKE_MOVE,
+    OPPONENT_MOVE,
+    SELF_MOVE,
     CAPTURE_PIECE,
     CHECK,
     START_GAME,
