@@ -1,9 +1,11 @@
 package com.yelaco.chessgui;
 
 import com.yelaco.common.*;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -12,6 +14,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Stop;
+import javafx.scene.transform.Rotate;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +27,7 @@ public class PlayController implements Initializable {
     private Player currentPlayer;
     private boolean makingMove = false;
     private ImageView movingPiece = null;
+    ImageView promotingPiece = null;
     private String rootPath = null;
     private String delimiter = null;
     private String rootPathNew = null;
@@ -30,6 +35,7 @@ public class PlayController implements Initializable {
 
     private ArrayList<ImageView> showMoveImgView;
     private HashMap<BorderPane, String> canMovePane;
+    private HashMap<BorderPane, String> highlightMovePane;
     private BorderPane[][] spots = new BorderPane[8][8];
     private ChessTimer task;
     private Timer timer;
@@ -46,6 +52,10 @@ public class PlayController implements Initializable {
     //player black clock
     @FXML
     public Label p2clock;
+
+    @FXML
+    HBox rootProm;
+    BorderPane showingProm;
 
     public void displayResult() {
         var resultDialog = new Dialog<String>();
@@ -64,11 +74,64 @@ public class PlayController implements Initializable {
 
     }
 
+    public void displayPromoteChoice(boolean isWhite, int col, int row) {
+        try {
+            String res = null;
+            if (isWhite && row == 7) {
+                res = "white-promote.fxml";
+                rootProm.setAlignment(Pos.TOP_LEFT);
+            } else if (isWhite && row == 0) {
+                res = "rev-white-promote.fxml";
+                rootProm.setAlignment(Pos.BOTTOM_LEFT);
+            } else if (!isWhite && row == 7) {
+                res = "black-promote.fxml";
+                rootProm.setAlignment(Pos.TOP_LEFT);
+            } else if (!isWhite && row == 0) {
+                res = "rev-black-promote.fxml";
+                rootProm.setAlignment(Pos.BOTTOM_LEFT);
+            }
+            assert res != null;
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(res));
+            loader.setController(new PromoteController(this));
+            rootProm.setVisible(true);
+            var proms = rootProm.getChildren();
+            showingProm = (BorderPane) proms.get(col);
+            showingProm.setCenter(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void highlightMove(boolean isHighlighted, int startX, int startY, int endX, int endY, BorderPane sp, BorderPane ep) {
+        if (isHighlighted) {
+            BorderPane start = spots[startX][startY];
+            BorderPane end = spots[endX][endY];
+            highlightMovePane.put(start, start.getStyle());
+            highlightMovePane.put(end, end.getStyle());
+            if ( (startX + startY) % 2 == 1) {
+                start.setStyle("-fx-background-color: rgba(244,246,128,255);");
+            } else {
+                start.setStyle("-fx-background-color: rgba(187,204,68,255);");
+            }
+            if ( (endX + endY) % 2 == 1) {
+                end.setStyle("-fx-background-color: rgba(244,246,128,255);");
+            } else {
+                end.setStyle("-fx-background-color: rgba(187,204,68,255);");
+            }
+        } else {
+            sp.setStyle(highlightMovePane.get(sp));
+            ep.setStyle(highlightMovePane.get(ep));
+            highlightMovePane.clear();
+        }
+
+    }
+
     private void playSound(SoundEffect gameSound) {
         ChessAudio.playSound(gameSound);
     }
 
-    private void makeMoveSound(Move move) {
+    public void makeMoveSound(Move move) {
         if (game.isOver()) {
             switch (game.getStatus()) {
                 case STALEMATE -> {
@@ -88,7 +151,7 @@ public class PlayController implements Initializable {
             playSound(SoundEffect.PROMOTION);
         } else if (move.getPieceKilled() != null || move.isEnpassant()) {
             playSound(SoundEffect.CAPTURE_PIECE);
-        }else {
+        } else {
             // due to internal logic, the current turn will be switched before making a sound
             if (player1 != currentPlayer.isWhiteSide) {
                 playSound(SoundEffect.SELF_MOVE);
@@ -141,6 +204,10 @@ public class PlayController implements Initializable {
         // if you pick a piece to move, the next click must be the spot you want to move to
         if (makingMove) {
             showAvailableMoves(false);
+            if (!highlightMovePane.isEmpty()) {
+                highlightMove(false, -1, -1, -1, -1, highlightMovePane.keySet().stream().toList().get(0),
+                        highlightMovePane.keySet().stream().toList().get(1));
+            }
 
             try {
                 var move = filterInput(movingPiece.getParent().getId(), pane.getId());
@@ -156,7 +223,10 @@ public class PlayController implements Initializable {
                     var ltmove = movesPlayed.get(movesPlayed.size()-1);
 
                     // audio
-                    makeMoveSound(ltmove);
+                    if (!ltmove.isPromotion()) {
+                        // promotion will require other audio player
+                        makeMoveSound(ltmove);
+                    }
 
                     var startView = (ImageView) spots[ltmove.getStart().getX()][ltmove.getStart().getY()].getCenter();
                     var endView = (ImageView) spots[ltmove.getEnd().getX()][ltmove.getEnd().getY()].getCenter();
@@ -173,14 +243,11 @@ public class PlayController implements Initializable {
                         var spotKilled = (ImageView) spots[ltmove.getSpotKilled().getX()][ltmove.getSpotKilled().getY()].getCenter();
                         spotKilled.setImage(null);
                     } else if (ltmove.isPromotion()) {
-                        String pieceImg;
-                        if (ltmove.getPieceMoved().isWhite()) {
-                            pieceImg = "wq.png";
-                        } else {
-                            pieceImg = "bq.png";
-                        }
-                        endView.setImage(new Image(rootPath + delimiter + "img" + delimiter + pieceImg));
+                        promotingPiece = endView;
                     }
+                    highlightMove(true,
+                            ltmove.getStart().getX(), ltmove.getStart().getY(), ltmove.getEnd().getX(), ltmove.getEnd().getY(),
+                            (BorderPane) startView.getParent(), (BorderPane) endView.getParent());
                 } else if (moveStat == MoveStatus.SAME_SIDE) {
                     movingPiece = imgView;
                     showAvailableMoves(true);
@@ -240,7 +307,8 @@ public class PlayController implements Initializable {
         rootPathNew = String.join("/", tmp);
 
         game = new Game();
-        game.init(new HumanPlayer(true), new HumanPlayer(false));
+        game.init(new HumanPlayer(true), new ComputerPlayer(false));
+        game.setPlayController(this);
         currentPlayer = game.getCurrentTurn();
 
         int idx = 0;
@@ -269,5 +337,7 @@ public class PlayController implements Initializable {
         timer.schedule(task, 500, 1000 );
 
         player1 = currentPlayer.isWhiteSide;
+
+        highlightMovePane = new HashMap<>();
     }
 }

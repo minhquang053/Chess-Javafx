@@ -63,9 +63,10 @@ public class ChessTimer extends TimerTask {
     private String secondToMinute(int sec) {
         int minute = Math.floorDiv(sec, 60);
         int second = sec - minute * 60;
-        if (second == 0) {
-            return String.format("%d:00", minute);
+        if (second < 10) {
+            return String.format("%d:0%d", minute, second);
+        } else {
+            return String.format("%d:%d", minute, second);
         }
-        return String.format("%d:%d", minute, second);
     }
 }

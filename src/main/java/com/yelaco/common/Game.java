@@ -1,5 +1,6 @@
 package com.yelaco.common;
 
+import com.yelaco.chessgui.PlayController;
 import com.yelaco.piece.*;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ public class Game {
     private Player currentTurn;
     private GameStatus status;
     private ArrayList<Move> movesPlayed;
-
+    private PlayController pc;
     private Spot[] twoKings;
 
     public Game() {
@@ -44,6 +45,10 @@ public class Game {
         movesPlayed.clear();
     }
 
+    public void setPlayController(PlayController pc) {
+        this.pc = pc;
+    }
+
     public void updateTwokings() {
         try {
             for (int i = 0; i < 8; i++) {
@@ -74,6 +79,41 @@ public class Game {
 
     public GameStatus getStatus() {
         return this.status;
+    }
+
+    public void setPromote(String pieceName) {
+        var lastMove = getLastMovePlayed();
+        if (lastMove.isPromotion()) {
+            switch (pieceName) {
+                case "wq.png" -> {
+                    lastMove.getEnd().setPiece(new Queen(true));
+                }
+                case "wn.png" -> {
+                    lastMove.getEnd().setPiece(new Knight(true));
+                }
+                case "wb.png" -> {
+                    lastMove.getEnd().setPiece(new Bishop(true));
+                }
+                case "wr.png" -> {
+                    lastMove.getEnd().setPiece(new Rook(true));
+                }
+                case "bq.png" -> {
+                    lastMove.getEnd().setPiece(new Queen(false));
+                }
+                case "bn.png" -> {
+                    lastMove.getEnd().setPiece(new Knight(false));
+                }
+                case "bb.png" -> {
+                    lastMove.getEnd().setPiece(new Bishop(false));
+                }
+                case "br.png" -> {
+                    lastMove.getEnd().setPiece(new Rook(false));
+                }
+            }
+            if (kingInDanger(!lastMove.getEnd().getPiece().isWhite())) {
+                lastMove.setCheckMove(true);
+            }
+        }
     }
 
     public ArrayList<String> getAvailiableMove(int mX, int mY) {
@@ -399,24 +439,19 @@ public class Game {
         }
         //
 
-        // Pawn promotion and init move
         if (srcPiece instanceof Pawn) {
+            // Pawn init move
             if (!((Pawn) srcPiece).getInitMoved()) {
                 if (Math.abs(move.getEnd().getY() - move.getStart().getY()) == 2) {
                     ((Pawn) srcPiece).setCanEnpassant(true);
                 }
                 ((Pawn) srcPiece).setInitMoved(true);
             }
-
-            if (move.getEnd().getY() == 7) {
-                srcPiece = new Queen(true);
+            // Pawn promote
+            if (move.getEnd().getY() == 7 || move.getEnd().getY() == 0) {
+                pc.displayPromoteChoice(srcPiece.isWhite(), move.getEnd().getX(), move.getEnd().getY());
                 move.setPromotion(true);
             }
-            if (move.getEnd().getY() == 0) {
-                srcPiece = new Queen(false);
-                move.setPromotion(true);
-            }
-
             // En passant
             if (move.getEnd().getX() != move.getStart().getX() && move.getEnd().getPiece() == null) {
                 try {

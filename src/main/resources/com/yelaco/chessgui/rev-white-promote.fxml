@@ -6,14 +6,17 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="445.0" prefWidth="100.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
    <children>
+      <Button alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="45.0" prefWidth="100.0" style="-fx-background-color: rgba(241,241,241,255);" textAlignment="CENTER">
+         <graphic>
+            <ImageView fitHeight="30.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@img/cancel.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
       <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#setPromoteChoice" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@img/wq.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#setPromoteChoice" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@img/wn.png" />
+            <Image url="@img/wb.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#setPromoteChoice" pickOnBounds="true" preserveRatio="true">
@@ -23,16 +26,13 @@
       </ImageView>
       <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#setPromoteChoice" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@img/wb.png" />
+            <Image url="@img/wn.png" />
          </image>
       </ImageView>
-      <Button alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="45.0" prefWidth="100.0" style="-fx-background-color: rgba(241,241,241,255);" textAlignment="CENTER">
-         <graphic>
-            <ImageView fitHeight="30.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@img/cancel.png" />
-               </image>
-            </ImageView>
-         </graphic></Button>
+      <ImageView fitHeight="100.0" fitWidth="100.0" onMouseClicked="#setPromoteChoice" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@img/wq.png" />
+         </image>
+      </ImageView>
    </children>
 </VBox>
