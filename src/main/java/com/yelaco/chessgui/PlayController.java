@@ -1,6 +1,7 @@
 package com.yelaco.chessgui;
 
 import com.yelaco.common.*;
+import com.yelaco.piece.Piece;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -68,7 +69,6 @@ public class PlayController implements Initializable {
     }
 
     public void displayGameOver() {
-        System.out.println("Game ended with " + game.getStatus());
         apane.setDisable(true);
         timer.cancel();
         timer.purge();
@@ -104,6 +104,22 @@ public class PlayController implements Initializable {
         }
 
     }
+
+    public void exitPromoteChoice(MouseEvent event) {
+        rootProm.setVisible(false);
+        showingProm.setCenter(null);
+        var move = game.getLastMovePlayed();
+        var start = spots[move.getStart().getX()][move.getStart().getY()];
+        var end = spots[move.getEnd().getX()][move.getEnd().getY()];
+        ((ImageView) start.getCenter()).setImage(new Image(game.pieceToUrl(move.getPieceMoved())));
+        ((ImageView) end.getCenter()).setImage(
+                move.getPieceKilled() == null ? null : new Image(game.pieceToUrl(move.getPieceKilled()))
+        );
+        game.reverseLastMove();
+        currentPlayer = game.getCurrentTurn();
+    }
+
+
 
     private void highlightMove(boolean isHighlighted, int startX, int startY, int endX, int endY, BorderPane sp, BorderPane ep) {
         if (isHighlighted) {
@@ -200,6 +216,9 @@ public class PlayController implements Initializable {
         }
     }
 
+    /*
+     * To highlight the selected piece while showing its available moves on screen
+     */
     private void clickHighlight(boolean isHighlight, MouseEvent event) {
         if (isHighlight) {
             BorderPane pane = (BorderPane) ((ImageView) event.getSource()).getParent();
@@ -276,7 +295,7 @@ public class PlayController implements Initializable {
                     showAvailableMoves(true, event);
                     return;
                 } else {
-                    System.out.println("Invalid moved from " + move[0] + move[1] + " to " + move[2] + move[3]);
+                    // invalid move
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -332,6 +351,7 @@ public class PlayController implements Initializable {
         game = new Game();
         game.init(new HumanPlayer(true), new ComputerPlayer(false));
         game.setPlayController(this);
+        game.setRootPath(rootPathNew);
         currentPlayer = game.getCurrentTurn();
 
         int idx = 0;

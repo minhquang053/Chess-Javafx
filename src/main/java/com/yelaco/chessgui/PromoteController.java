@@ -3,6 +3,7 @@ package com.yelaco.chessgui;
 import javafx.fxml.Initializable;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 
 import java.io.File;
 import java.net.URL;
@@ -30,5 +31,10 @@ public class PromoteController implements Initializable {
         if (pc.game.isOver()) {
             pc.displayGameOver();
         }
+        event.consume();
+    }
+
+    public void exitPromoteChoice(MouseEvent event) {
+        pc.exitPromoteChoice(event);
     }
 }

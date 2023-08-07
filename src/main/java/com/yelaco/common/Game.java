@@ -13,6 +13,7 @@ public class Game {
     private ArrayList<Move> movesPlayed;
     private PlayController pc;
     private Spot[] twoKings;
+    private String rootPath;
 
     public Game() {
         players = new Player[2];
@@ -79,6 +80,10 @@ public class Game {
 
     public GameStatus getStatus() {
         return this.status;
+    }
+
+    public void setRootPath(String rp) {
+        rootPath = rp;
     }
 
     public void setPromote(String pieceName) {
@@ -157,6 +162,21 @@ public class Game {
             e.printStackTrace();
         }
         return availMove;
+    }
+
+    public void reverseLastMove() {
+        var lastMove = getLastMovePlayed();
+        lastMove.getStart().setPiece(lastMove.getPieceMoved());
+        if (lastMove.isEnpassant()) {
+            lastMove.getEnd().setPiece(null);
+        } else {
+            lastMove.getEnd().setPiece(lastMove.getPieceKilled());
+        }
+        if (this.currentTurn == players[0]) {
+            this.currentTurn = players[1];
+        } else {
+            this.currentTurn = players[0];
+        }
     }
 
     public Player getCurrentTurn() {
@@ -526,5 +546,40 @@ public class Game {
         }
 
         return MoveStatus.SUCCESS;
+    }
+
+    public String pieceToUrl(Piece piece) {
+        if (piece instanceof Pawn) {
+            if (piece.isWhite()) {
+                return rootPath + "img/wp.png";
+            }
+            return rootPath + "img/bp.png";
+        } else if (piece instanceof Knight) {
+            if (piece.isWhite()) {
+                return rootPath + "img/wn.png";
+            }
+            return rootPath + "img/bn.png";
+        } else if (piece instanceof Rook) {
+            if (piece.isWhite()) {
+                return rootPath + "img/wr.png";
+            }
+            return rootPath + "img/br.png";
+        } else if (piece instanceof Bishop) {
+            if (piece.isWhite()) {
+                return rootPath + "img/wb.png";
+            }
+            return rootPath + "img/bb.png";
+        } else if (piece instanceof King) {
+            if (piece.isWhite()) {
+                return rootPath + "img/wk.png";
+            }
+            return rootPath + "img/bk.png";
+        } else if (piece instanceof Queen) {
+            if (piece.isWhite()) {
+                return rootPath + "img/wq.png";
+            }
+            return rootPath + "img/bq.png";
+        }
+        return null;
     }
 }
