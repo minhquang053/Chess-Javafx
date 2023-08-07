@@ -36,6 +36,8 @@ public class PlayController implements Initializable {
     private ArrayList<ImageView> showMoveImgView;
     private HashMap<BorderPane, String> canMovePane;
     private HashMap<BorderPane, String> highlightMovePane;
+    private BorderPane prevClick;
+    private String prevClickStyle;
     private BorderPane[][] spots = new BorderPane[8][8];
     private ChessTimer task;
     private Timer timer;
@@ -165,7 +167,8 @@ public class PlayController implements Initializable {
         return "wk.png/wq.png/wb.png/wn.png/wr.png/wp.png".contains(pieceName) == isWhite;
     }
 
-    private void showAvailableMoves(boolean isShow) {
+    private void showAvailableMoves(boolean isShow, MouseEvent event) {
+        clickHighlight(isShow, event);
         if (isShow) {
             Image moveDot = new Image(rootPath + delimiter + "img" + delimiter + "moveDot.png");
             String movePane = movingPiece.getParent().getId();
@@ -197,13 +200,33 @@ public class PlayController implements Initializable {
         }
     }
 
+    private void clickHighlight(boolean isHighlight, MouseEvent event) {
+        if (isHighlight) {
+            BorderPane pane = (BorderPane) ((ImageView) event.getSource()).getParent();
+            prevClick = pane;
+            prevClickStyle = pane.getStyle();
+            String cord = pane.getId();
+            int x = cord.charAt(0) - 'a';
+            int y = cord.charAt(1) - '0' - 1;
+            if ((x + y) % 2 == 1) {
+                pane.setStyle("-fx-background-color: rgba(244,246,128,255);");
+            } else {
+                pane.setStyle("-fx-background-color: rgba(187,204,68,255);");
+            }
+        } else {
+            prevClick.setStyle(prevClickStyle);
+            prevClick = null;
+            prevClickStyle = null;
+        }
+    }
+
     public void processMove(MouseEvent event) {
         var imgView = (ImageView) event.getSource();
         var pane = (BorderPane) imgView.getParent();
 
         // if you pick a piece to move, the next click must be the spot you want to move to
         if (makingMove) {
-            showAvailableMoves(false);
+            showAvailableMoves(false, null);
             if (!highlightMovePane.isEmpty()) {
                 highlightMove(false, -1, -1, -1, -1, highlightMovePane.keySet().stream().toList().get(0),
                         highlightMovePane.keySet().stream().toList().get(1));
@@ -250,7 +273,7 @@ public class PlayController implements Initializable {
                             (BorderPane) startView.getParent(), (BorderPane) endView.getParent());
                 } else if (moveStat == MoveStatus.SAME_SIDE) {
                     movingPiece = imgView;
-                    showAvailableMoves(true);
+                    showAvailableMoves(true, event);
                     return;
                 } else {
                     System.out.println("Invalid moved from " + move[0] + move[1] + " to " + move[2] + move[3]);
@@ -276,7 +299,7 @@ public class PlayController implements Initializable {
             // wait for the end spot
             makingMove = true;
             movingPiece = imgView;
-            showAvailableMoves(true);
+            showAvailableMoves(true, event);
         }
     }
 
