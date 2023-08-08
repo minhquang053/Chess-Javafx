@@ -1,7 +1,9 @@
 package com.yelaco.chessgui;
 
 import com.yelaco.common.*;
+import com.yelaco.engine.Stockfish;
 import com.yelaco.piece.Piece;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -42,6 +44,8 @@ public class PlayController implements Initializable {
     private BorderPane[][] spots = new BorderPane[8][8];
     private ChessTimer task;
     private Timer timer;
+
+    private Stockfish sfClient;
 
     @FXML
     private AnchorPane apane;
@@ -240,6 +244,9 @@ public class PlayController implements Initializable {
     }
 
     public void processMove(MouseEvent event) {
+        if (currentPlayer instanceof ComputerPlayer) {
+            return;
+        }
         var imgView = (ImageView) event.getSource();
         var pane = (BorderPane) imgView.getParent();
 
@@ -256,40 +263,13 @@ public class PlayController implements Initializable {
                 var moveStat = game.playerMove(currentPlayer, move[0], move[1], move[2], move[3]);
 
                 if (moveStat == MoveStatus.SUCCESS) {
-                    currentPlayer = game.getCurrentTurn();
-                    task.switchTurn(currentPlayer.isWhiteSide);
-
-
-                    // move piece
-                    var movesPlayed = game.getMovesPlayed();
-                    var ltmove = movesPlayed.get(movesPlayed.size()-1);
-
-                    // audio
-                    if (!ltmove.isPromotion()) {
-                        // promotion will require other audio player
-                        makeMoveSound(ltmove);
-                    }
-
-                    var startView = (ImageView) spots[ltmove.getStart().getX()][ltmove.getStart().getY()].getCenter();
-                    var endView = (ImageView) spots[ltmove.getEnd().getX()][ltmove.getEnd().getY()].getCenter();
-
-                    endView.setImage(movingPiece.getImage());
-                    startView.setImage(null);
-                    //
-                    if (ltmove.isCastlingMove()) {
-                        var rookStart = (ImageView) spots[ltmove.getRookCastled()[0].getX()][ltmove.getRookCastled()[0].getY()].getCenter();
-                        var rookEnd = (ImageView) spots[ltmove.getRookCastled()[1].getX()][ltmove.getRookCastled()[1].getY()].getCenter();
-                        rookEnd.setImage(rookStart.getImage());
-                        rookStart.setImage(null);
-                    } else if (ltmove.isEnpassant()) {
-                        var spotKilled = (ImageView) spots[ltmove.getSpotKilled().getX()][ltmove.getSpotKilled().getY()].getCenter();
-                        spotKilled.setImage(null);
-                    } else if (ltmove.isPromotion()) {
-                        promotingPiece = endView;
-                    }
-                    highlightMove(true,
-                            ltmove.getStart().getX(), ltmove.getStart().getY(), ltmove.getEnd().getX(), ltmove.getEnd().getY(),
-                            (BorderPane) startView.getParent(), (BorderPane) endView.getParent());
+                    updateBoard();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            botMove();
+                        }
+                    }).start();
                 } else if (moveStat == MoveStatus.SAME_SIDE) {
                     movingPiece = imgView;
                     showAvailableMoves(true, event);
@@ -322,6 +302,42 @@ public class PlayController implements Initializable {
         }
     }
 
+    private void updateBoard() {
+        currentPlayer = game.getCurrentTurn();
+        task.switchTurn(currentPlayer.isWhiteSide);
+
+        // move piece
+        var movesPlayed = game.getMovesPlayed();
+        var ltmove = movesPlayed.get(movesPlayed.size()-1);
+
+        // audio
+        if (!ltmove.isPromotion()) {
+            // promotion will require other audio player
+            makeMoveSound(ltmove);
+        }
+
+        var startView = (ImageView) spots[ltmove.getStart().getX()][ltmove.getStart().getY()].getCenter();
+        var endView = (ImageView) spots[ltmove.getEnd().getX()][ltmove.getEnd().getY()].getCenter();
+
+        endView.setImage(new Image(game.pieceToUrl(ltmove.getPieceMoved())));
+        startView.setImage(null);
+        //
+        if (ltmove.isCastlingMove()) {
+            var rookStart = (ImageView) spots[ltmove.getRookCastled()[0].getX()][ltmove.getRookCastled()[0].getY()].getCenter();
+            var rookEnd = (ImageView) spots[ltmove.getRookCastled()[1].getX()][ltmove.getRookCastled()[1].getY()].getCenter();
+            rookEnd.setImage(rookStart.getImage());
+            rookStart.setImage(null);
+        } else if (ltmove.isEnpassant()) {
+            var spotKilled = (ImageView) spots[ltmove.getSpotKilled().getX()][ltmove.getSpotKilled().getY()].getCenter();
+            spotKilled.setImage(null);
+        } else if (ltmove.isPromotion()) {
+            promotingPiece = endView;
+        }
+        highlightMove(true,
+                ltmove.getStart().getX(), ltmove.getStart().getY(), ltmove.getEnd().getX(), ltmove.getEnd().getY(),
+                (BorderPane) startView.getParent(), (BorderPane) endView.getParent());
+    }
+
     private int[] filterInput(String moveFrom, String moveTo) throws Exception {
         if (moveFrom.length() != 2 || moveTo.length() != 2) {
             throw new Exception("Invalid input: " + moveFrom + " " + moveTo);
@@ -342,6 +358,36 @@ public class PlayController implements Initializable {
         return moves;
     }
 
+    private void botMove() {
+        // get FEN based on spots
+        if (!(currentPlayer instanceof ComputerPlayer)) {
+            return;
+        }
+
+        String move = sfClient.getBestMove(game.boardToFen(), ((ComputerPlayer) currentPlayer).getWaitTime());
+
+
+        try {
+            while (move == null) {
+                Thread.sleep(((ComputerPlayer) currentPlayer).getWaitTime());
+            }
+            if (!highlightMovePane.isEmpty()) {
+                highlightMove(false, -1, -1, -1, -1, highlightMovePane.keySet().stream().toList().get(0),
+                        highlightMovePane.keySet().stream().toList().get(1));
+            }
+            var coords = filterInput(move.substring(0, 2), move.substring(2, 4));
+            game.playerMove(currentPlayer, coords[0], coords[1], coords[2], coords[3]);
+            updateBoard();
+            Platform.runLater(() -> {
+                if (game.isOver()) {
+                    displayGameOver();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         String[] tmp = url.toString().split("/");
@@ -349,7 +395,7 @@ public class PlayController implements Initializable {
         rootPathNew = String.join("/", tmp);
 
         game = new Game();
-        game.init(new HumanPlayer(true), new ComputerPlayer(false));
+        game.init(new HumanPlayer(true), new ComputerPlayer(false,  300));
         game.setPlayController(this);
         game.setRootPath(rootPathNew);
         currentPlayer = game.getCurrentTurn();
@@ -382,5 +428,9 @@ public class PlayController implements Initializable {
         player1 = currentPlayer.isWhiteSide;
 
         highlightMovePane = new HashMap<>();
+
+        sfClient = new Stockfish();
+        sfClient.startEngine();
+        sfClient.sendCommand("uci");
     }
 }

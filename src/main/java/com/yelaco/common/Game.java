@@ -2,7 +2,9 @@ package com.yelaco.common;
 
 import com.yelaco.chessgui.PlayController;
 import com.yelaco.piece.*;
+import javafx.scene.image.ImageView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Game {
@@ -581,5 +583,70 @@ public class Game {
             return rootPath + "img/bq.png";
         }
         return null;
+    }
+
+    public String boardToFen() {
+        int nls;
+        StringBuilder fen = new StringBuilder();
+        try {
+            for (int j = 7; j >= 0; j--) {
+                nls = 0;
+                for (int i = 0; i < 8; i++) {
+                    var piece = board.getBox(i, j).getPiece();
+                    if (piece != null && nls > 0) {
+                        fen.append(String.format("%d", nls));
+                        nls = 0;
+                    }
+                    if (piece instanceof Pawn) {
+                        if (piece.isWhite()) {
+                            fen.append("P");
+                        } else {
+                            fen.append("p");
+                        }
+                    } else if (piece instanceof Knight) {
+                        if (piece.isWhite()) {
+                            fen.append("N");
+                        } else {
+                            fen.append("n");
+                        }
+                    } else if (piece instanceof Rook) {
+                        if (piece.isWhite()) {
+                            fen.append("R");
+                        } else {
+                            fen.append("r");
+                        }
+                    } else if (piece instanceof Bishop) {
+                        if (piece.isWhite()) {
+                            fen.append("B");
+                        } else {
+                            fen.append("b");
+                        }
+                    } else if (piece instanceof King) {
+                        if (piece.isWhite()) {
+                            fen.append("K");
+                        } else {
+                            fen.append("k");
+                        }
+                    } else if (piece instanceof Queen) {
+                        if (piece.isWhite()) {
+                            fen.append("Q");
+                        } else {
+                            fen.append("q");
+                        }
+                    } else {
+                        nls++;
+                    }
+                }
+                if (nls > 0) {
+                    fen.append(String.format("%d", nls));
+                    nls = 0;
+                }
+                fen.append("/");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return fen.toString();
+
     }
 }

@@ -31,6 +31,8 @@ public class PromoteController implements Initializable {
         if (pc.game.isOver()) {
             pc.displayGameOver();
         }
+
+        // to stop the event from propagating to parent layers
         event.consume();
     }
 

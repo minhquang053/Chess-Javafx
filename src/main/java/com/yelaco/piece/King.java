@@ -44,6 +44,10 @@ public class King extends Piece {
 
         // check valid move
         if (Math.abs(start.getX() - end.getX()) <= 1 && Math.abs(start.getY() - end.getY()) <= 1) {
+            // if the king can kill the opponent's king, it's already a win, no need to check if being attacked after
+            if (end.getPiece() instanceof King) {
+                return true;
+            }
             // check if move results in King being attacked
             var supposedPiece = end.getPiece();
             end.setPiece(start.getPiece());
