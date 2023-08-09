@@ -105,10 +105,9 @@ public class King extends Piece {
         int i = start.getX();
         int j = start.getY();
         int bex = end.getX();
-        int bey = end.getY();
         if (i < bex) {
             bex--;
-        } else {
+        } else if (i > bex){
             bex++;
         }
 
@@ -126,6 +125,7 @@ public class King extends Piece {
                     inBetweens.add(board.getBox(i, j));
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -133,10 +133,13 @@ public class King extends Piece {
         // Check valid castling
         try {
             for (Spot theSpot : inBetweens) {
-                for (int x = 0; i < 8; i++) {
-                    for (int y = 0; j < 8; j++) {
+                for (int x = 0; x < 8; x++) {
+                    for (int y = 0; y < 8; y++) {
                         var box = board.getBox(x, y);
                         var piece = box.getPiece();
+                        if (piece == null) {
+                            continue;
+                        }
                         if (piece.isWhite() == start.getPiece().isWhite()) {
                             continue;
                         }
@@ -147,9 +150,9 @@ public class King extends Piece {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
-
         return true;
     }
 

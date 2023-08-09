@@ -2,9 +2,7 @@ package com.yelaco.chessgui;
 
 import com.yelaco.common.*;
 import com.yelaco.engine.Stockfish;
-import com.yelaco.piece.Piece;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,8 +15,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Stop;
-import javafx.scene.transform.Rotate;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,13 +23,11 @@ import java.util.*;
 
 public class PlayController implements Initializable {
     public Game game;
-    private Player currentPlayer;
+    Player currentPlayer;
     private boolean makingMove = false;
     private ImageView movingPiece = null;
     ImageView promotingPiece = null;
     private String rootPath = null;
-    private String delimiter = null;
-    private String rootPathNew = null;
     private boolean player1;
 
     private ArrayList<ImageView> showMoveImgView;
@@ -41,6 +35,7 @@ public class PlayController implements Initializable {
     private HashMap<BorderPane, String> highlightMovePane;
     private BorderPane prevClick;
     private String prevClickStyle;
+    private Image moveDot;
     private BorderPane[][] spots = new BorderPane[8][8];
     private ChessTimer task;
     private Timer timer;
@@ -65,6 +60,7 @@ public class PlayController implements Initializable {
     BorderPane showingProm;
 
     public void displayResult() {
+        rootProm.setVisible(true);
         var resultDialog = new Dialog<String>();
         resultDialog.setTitle("Result");
         resultDialog.setContentText("Game ended with " + game.getStatus());
@@ -190,7 +186,6 @@ public class PlayController implements Initializable {
     private void showAvailableMoves(boolean isShow, MouseEvent event) {
         clickHighlight(isShow, event);
         if (isShow) {
-            Image moveDot = new Image(rootPath + delimiter + "img" + delimiter + "moveDot.png");
             String movePane = movingPiece.getParent().getId();
 
             int mX = movePane.charAt(0) - 'a';
@@ -203,13 +198,13 @@ public class PlayController implements Initializable {
                     moveImgView.setImage(moveDot);
                 } else {
                     canMovePane.put(bpane, bpane.getStyle());
-                    bpane.setStyle(bpane.getStyle() + "-fx-background-image: url(\"" + rootPathNew + "img/killDot.png\"); -fx-background-size: 100");
+                    bpane.setStyle(bpane.getStyle() + "-fx-background-image: url(\"" + rootPath + "img/killDot.png\"); -fx-background-size: 100");
                 }
                 showMoveImgView.add(moveImgView);
             }
         } else {
             for (ImageView imgView : showMoveImgView) {
-                if (imgView.getImage().getUrl().contains("moveDot.png")) imgView.setImage(null);
+                if (imgView.getImage() == moveDot) imgView.setImage(null);
             }
             for (BorderPane bpane: canMovePane.keySet()) {
                 var prevStyle = (String) canMovePane.get(bpane);
@@ -264,12 +259,14 @@ public class PlayController implements Initializable {
 
                 if (moveStat == MoveStatus.SUCCESS) {
                     updateBoard();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            botMove();
-                        }
-                    }).start();
+                    if (currentPlayer instanceof ComputerPlayer) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                botMove();
+                            }
+                        }).start();
+                    }
                 } else if (moveStat == MoveStatus.SAME_SIDE) {
                     movingPiece = imgView;
                     showAvailableMoves(true, event);
@@ -388,16 +385,54 @@ public class PlayController implements Initializable {
         }
     }
 
+    public void reverseMove() {
+        if (game.getMovesPlayed().isEmpty() || game.isOver()) {
+            return;
+        }
+        var lastMove = game.getLastMovePlayed();
+        var startView = (ImageView) spots[lastMove.getStart().getX()][lastMove.getStart().getY()].getCenter();
+        var endView = (ImageView) spots[lastMove.getEnd().getX()][lastMove.getEnd().getY()].getCenter();
+        startView.setImage(endView.getImage());
+
+        if (lastMove.isCastlingMove()) {
+            var rookSpots = lastMove.getRookCastled();
+            ((ImageView) spots[rookSpots[0].getX()][rookSpots[0].getY()].getCenter()).setImage(
+                    new Image(game.pieceToUrl(lastMove.getPieceKilled()))
+            );
+            ((ImageView) spots[rookSpots[1].getX()][rookSpots[1].getY()].getCenter()).setImage(null);
+            endView.setImage(null);
+        } else if (lastMove.isEnpassant()) {
+            startView.setImage(new Image(game.pieceToUrl(lastMove.getPieceMoved())));
+            endView.setImage(null);
+            var spotKillView = spots[lastMove.getSpotKilled().getX()][lastMove.getSpotKilled().getY()];
+            ((ImageView)spotKillView.getCenter()).setImage(new Image(game.pieceToUrl(lastMove.getPieceKilled())));
+        } else if (lastMove.isPromotion()) {
+            startView.setImage(new Image(game.pieceToUrl(lastMove.getPieceMoved())));
+            endView.setImage(
+                    lastMove.getPieceKilled() == null ? null : new Image(game.pieceToUrl(lastMove.getPieceKilled()))
+            );
+        } else {
+            endView.setImage(
+                    lastMove.getPieceKilled() == null ? null : new Image(game.pieceToUrl(lastMove.getPieceKilled()))
+            );
+        }
+        game.reverseLastMove();
+    }
+
+    public void setOpponent(Player opponent) {
+        game.getPlayers()[1] = opponent;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         String[] tmp = url.toString().split("/");
         tmp[tmp.length-1] = "";
-        rootPathNew = String.join("/", tmp);
+        rootPath = String.join("/", tmp);
 
         game = new Game();
         game.init(new HumanPlayer(true), new ComputerPlayer(false,  300));
         game.setPlayController(this);
-        game.setRootPath(rootPathNew);
+        game.setRootPath(rootPath);
         currentPlayer = game.getCurrentTurn();
 
         int idx = 0;
@@ -410,12 +445,7 @@ public class PlayController implements Initializable {
         showMoveImgView = new ArrayList<>();
         canMovePane = new HashMap<>();
 
-        rootPath = new File(url.toString()).getParent();
-        if (rootPath.contains("\\")) {
-            delimiter = "\\";
-        } else {
-            delimiter = "/";
-        }
+        moveDot = new Image(Objects.requireNonNull(getClass().getResourceAsStream("img/moveDot.png")));
 
         ChessAudio.setup(rootPath);
 

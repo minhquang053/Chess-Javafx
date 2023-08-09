@@ -52,6 +52,10 @@ public class Game {
         this.pc = pc;
     }
 
+    public Player[] getPlayers() {
+        return this.players;
+    }
+
     public void updateTwokings() {
         try {
             for (int i = 0; i < 8; i++) {
@@ -146,6 +150,14 @@ public class Game {
                             tmpPiece = tmpBox.getPiece();
                             tmpBox.setPiece(null);
                         }
+                        if (piece instanceof King && ((King) piece).isCastlingMove(startSpot, endSpot)) {
+                            endSpot.setPiece(null);
+                            if (startSpot.getX() < endSpot.getX()) {
+                                board.getBox(endSpot.getX() - 1, mY).setPiece(piece);
+                            } else {
+                                board.getBox(endSpot.getX() + 2, mY).setPiece(piece);
+                            }
+                        }
                         if (!kingInDanger(piece.isWhite())) {
                             availMove.add(String.format("%d%d", i, j));
                         }
@@ -156,6 +168,13 @@ public class Game {
                             tmpBox.setPiece(tmpPiece);
                             tmpBox = null;
                             tmpPiece = null;
+                        }
+                        if (piece instanceof King && ((King) piece).isCastlingMove(startSpot, endSpot)) {
+                            if (startSpot.getX() < endSpot.getX()) {
+                                board.getBox(endSpot.getX() - 1, mY).setPiece(null);
+                            } else {
+                                board.getBox(endSpot.getX() + 2, mY).setPiece(null);
+                            }
                         }
                     }
                 }
@@ -168,12 +187,46 @@ public class Game {
 
     public void reverseLastMove() {
         var lastMove = getLastMovePlayed();
-        lastMove.getStart().setPiece(lastMove.getPieceMoved());
+        getMovesPlayed().remove(getMovesPlayed().size() - 1);
+        var pieceMoved = lastMove.getPieceMoved();
+        var pieceKilled = lastMove.getPieceKilled();
+        lastMove.getStart().setPiece(pieceMoved);
         if (lastMove.isEnpassant()) {
             lastMove.getEnd().setPiece(null);
+            lastMove.getStart().setPiece(lastMove.getPieceMoved());
+            lastMove.getSpotKilled().setPiece(pieceKilled);
+            ((Pawn) pieceKilled).setCanEnpassant(true);
+        } else if (lastMove.isCastlingMove()) {
+            lastMove.getEnd().setPiece(null);
+            var rookMove = lastMove.getRookCastled();
+            rookMove[0].setPiece(pieceKilled);
+            rookMove[1].setPiece(null);
         } else {
-            lastMove.getEnd().setPiece(lastMove.getPieceKilled());
+            lastMove.getEnd().setPiece(pieceKilled);
         }
+        if (pieceMoved instanceof Pawn &&
+                ((lastMove.getStart().getY() == 1 && pieceMoved.isWhite())
+                || (lastMove.getStart().getY() == 6 && !pieceMoved.isWhite()))) {
+            ((Pawn) pieceMoved).setInitMoved(false);
+        }
+        if (!getMovesPlayed().isEmpty() && getLastMovePlayed().getPieceMoved() instanceof Pawn) {
+            var llpiece = getLastMovePlayed().getPieceMoved();
+            var llstart = getLastMovePlayed().getStart();
+            if (llstart.getY() == 1 && llpiece.isWhite() || llstart.getY() == 6 && !llpiece.isWhite()) {
+                ((Pawn) llpiece).setCanEnpassant(true);
+            }
+        }
+
+        if (pieceMoved instanceof King) {
+            ((King) pieceMoved).setCastlingDone(false);
+            for (Move move: getMovesPlayed()) {
+                if (move.getPieceMoved() == pieceMoved) {
+                    ((King) pieceMoved).setCastlingDone(true);
+                    break;
+                }
+            }
+        }
+
         if (this.currentTurn == players[0]) {
             this.currentTurn = players[1];
         } else {
@@ -197,6 +250,12 @@ public class Game {
                 } else {
                     setStatus(GameStatus.WHITE_WIN);
                 }
+            }
+        } else {
+            if (currentTurn.isWhiteSide()) {
+                ((King) twoKings[0].getPiece()).setInCheck(false);
+            } else {
+                ((King) twoKings[1].getPiece()).setInCheck(false);
             }
         }
         return this.currentTurn;
@@ -451,13 +510,8 @@ public class Game {
             move.setPieceKilled(dstPiece);
         }
 
-        if (srcPiece instanceof King) {
-            if (!((King) srcPiece).isCastlingDone()) {
-                ((King) srcPiece).setCastlingDone(true);
-            }
-            if (((King) srcPiece).isCastlingMove(move.getStart(), move.getEnd())) {
-                move.setCastlingMove(true);
-            }
+        if (srcPiece instanceof King && ((King) srcPiece).isCastlingMove(move.getStart(), move.getEnd())) {
+            move.setCastlingMove(true);
         }
         //
 
@@ -478,6 +532,7 @@ public class Game {
             if (move.getEnd().getX() != move.getStart().getX() && move.getEnd().getPiece() == null) {
                 try {
                     var spotKilled = board.getBox(move.getEnd().getX(), move.getStart().getY());
+                    move.setPieceKilled(spotKilled.getPiece());
                     spotKilled.setPiece(null);
                     move.setEnpassant(true);
                     move.setSpotKilled(spotKilled);
@@ -545,6 +600,10 @@ public class Game {
             this.currentTurn = players[1];
         } else {
             this.currentTurn = players[0];
+        }
+
+        if (srcPiece instanceof King && !((King) srcPiece).isCastlingDone()) {
+                ((King) srcPiece).setCastlingDone(true);
         }
 
         return MoveStatus.SUCCESS;

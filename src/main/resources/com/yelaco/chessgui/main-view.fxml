@@ -37,12 +37,12 @@
                      <VBox.margin>
                         <Insets />
                      </VBox.margin></Button>
-                  <Button fx:id="btnHint" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0">
+                  <Button fx:id="btnRewind" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#reverseMove" prefHeight="60.0" prefWidth="60.0">
                      <VBox.margin>
                         <Insets top="20.0" />
                      </VBox.margin>
                   </Button>
-                  <Button fx:id="btnResign" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0">
+                  <Button fx:id="btnResign" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#resignMatch" prefHeight="60.0" prefWidth="60.0">
                      <VBox.margin>
                         <Insets bottom="10.0" top="20.0" />
                      </VBox.margin>
