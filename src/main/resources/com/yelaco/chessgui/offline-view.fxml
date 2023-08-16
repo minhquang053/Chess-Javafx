@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1100.0" style="-fx-background-color: rgba(62,61,58,255);" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yelaco.chessgui.OfflineController">
+   <bottom>
+      <HBox alignment="CENTER" BorderPane.alignment="CENTER">
+         <children>
+            <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="110.0" prefWidth="360.0">
+               <top>
+                  <Label fx:id="opname" alignment="CENTER" contentDisplay="CENTER" prefHeight="42.0" prefWidth="360.0" textFill="WHITE" BorderPane.alignment="CENTER">
+                     <font>
+                        <Font name="Montserrat Regular" size="30.0" />
+                     </font>
+                  </Label>
+               </top>
+               <center>
+                  <Label fx:id="opelo" alignment="TOP_CENTER" prefHeight="61.0" prefWidth="360.0" textFill="WHITE" BorderPane.alignment="CENTER">
+                     <font>
+                        <Font name="Montserrat Regular" size="30.0" />
+                     </font></Label>
+               </center>
+            </BorderPane>
+            <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="110.0" prefWidth="360.0">
+               <top>
+                  <Button focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#chooseLevel" prefHeight="60.0" prefWidth="250.0" text="Choose" BorderPane.alignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="25.0" />
+                     </font></Button>
+               </top>
+            </BorderPane>
+            <BorderPane layoutX="348.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="360.0">
+               <top>
+                  <Label prefHeight="42.0" prefWidth="175.0" text="Label" BorderPane.alignment="CENTER" />
+               </top>
+            </BorderPane>
+         </children>
+         <BorderPane.margin>
+            <Insets left="10.0" right="10.0" />
+         </BorderPane.margin>
+      </HBox>
+   </bottom>
+   <center>
+      <GridPane alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <BorderPane fx:id="level1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#choosePane" prefHeight="280.0" prefWidth="280.0">
+               <center>
+                  <ImageView fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@img/opponents/itadori.png" />
+                     </image>
+                  </ImageView>
+               </center>
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </BorderPane>
+            <BorderPane fx:id="level2" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#choosePane" prefHeight="280.0" prefWidth="280.0" GridPane.columnIndex="1">
+               <center>
+                  <ImageView fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                     <image>
+                        <Image url="@img/opponents/okkuta.png" />
+                     </image>
+                  </ImageView>
+               </center>
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </BorderPane>
+              <BorderPane fx:id="level3" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#choosePane" prefHeight="280.0" prefWidth="280.0" GridPane.columnIndex="2">
+               <center>
+                  <ImageView fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                     <image>
+                        <Image url="@img/opponents/geto.png" />
+                     </image>
+                  </ImageView>
+               </center>
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </BorderPane>
+            <BorderPane fx:id="level4" layoutX="148.0" layoutY="150.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#choosePane" prefHeight="280.0" prefWidth="280.0" GridPane.rowIndex="1">
+               <center>
+                  <ImageView fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@img/opponents/fushigoro.png" />
+                     </image>
+                  </ImageView>
+               </center>
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </BorderPane>
+            <BorderPane fx:id="level5" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#choosePane" prefHeight="280.0" prefWidth="280.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <center>
+                  <ImageView fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                     <image>
+                        <Image url="@img/opponents/satoru.png" />
+                     </image>
+                  </ImageView>
+               </center>
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </BorderPane>
+            <BorderPane fx:id="level6" layoutX="424.0" layoutY="150.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#choosePane" prefHeight="280.0" prefWidth="280.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <center>
+                  <ImageView fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                     <image>
+                        <Image url="@img/opponents/sukuna.png" />
+                     </image>
+                  </ImageView>
+               </center>
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </BorderPane>
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+      </GridPane>
+   </center>
+</BorderPane>

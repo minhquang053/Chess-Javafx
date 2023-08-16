@@ -87,6 +87,10 @@ public class King extends Piece {
             return false;
         }
 
+        if (!(end.getPiece() instanceof Rook)) {
+            return false;
+        }
+
         if (end.getY() != start.getY()) {
             return false;
         }

@@ -3,18 +3,20 @@ package com.yelaco.chessgui;
 import com.yelaco.common.ComputerPlayer;
 import com.yelaco.common.GameStatus;
 import com.yelaco.common.HumanPlayer;
+import com.yelaco.common.Player;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceDialog;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
@@ -23,6 +25,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
+    public boolean playAsWhite;
     @FXML
     private BorderPane root;
     @FXML
@@ -40,7 +43,8 @@ public class MainController implements Initializable {
     @FXML
     private Button btnOnline;
 
-    private PlayController pc;
+    public PlayController pc;
+    public OfflineController oc;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -71,25 +75,32 @@ public class MainController implements Initializable {
 
     public void makeOfflineMatch() {
         Opponent[] opponents = {Opponent.COMPUTER, Opponent.PLAYER2};
+        CheckBox optSide = new CheckBox("Play as white");
+        optSide.setSelected(true);
         ChoiceDialog<Opponent> mode = new ChoiceDialog<>(Opponent.COMPUTER, opponents);
+        mode.setGraphic(null);
+        mode.getDialogPane().setExpandableContent(optSide);
+        mode.getDialogPane().setExpanded(true);
         mode.setTitle("Offline mode");
         mode.setContentText("Choose your opponent");
         mode.setHeaderText("Welcome chess player!");
-        mode.setGraphic(null);
         mode.showAndWait();
         if (mode.getResult() == null) {
             return;
         }
         var opponent = mode.getSelectedItem();
-
-        loadScreen("play-view.fxml");
-        var color = pc.game.getPlayers()[1].isWhiteSide();
+        playAsWhite = optSide.isSelected();
         switch (opponent) {
-            case COMPUTER -> {;
-                pc.setOpponent(new ComputerPlayer(color, 300));
+            case COMPUTER -> {
+                loadScreen("offline-view.fxml");
             }
             case PLAYER2 -> {
-                pc.setOpponent(new HumanPlayer(color));
+                if (playAsWhite) {
+                    loadScreen("play-view.fxml");
+                } else {
+                    loadScreen("rev-play-view.fxml");
+                }
+                pc.initMatch(new HumanPlayer(playAsWhite), new HumanPlayer(!playAsWhite));
                 btnRewind.setDisable(true);
             }
         }
@@ -101,6 +112,12 @@ public class MainController implements Initializable {
         }
         pc.reverseMove();
         pc.reverseMove();
+        if (pc.whiteList.getItems().isEmpty()) {
+            return;
+        }
+        pc.whiteList.getItems().remove(pc.whiteList.getItems().size()-1);
+        pc.blackList.getItems().remove(pc.blackList.getItems().size() - 1);
+        pc.numList.getItems().remove(pc.numList.getItems().size() - 1);
     }
 
     public void resignMatch() {
@@ -115,16 +132,36 @@ public class MainController implements Initializable {
         pc.displayGameOver();
     }
 
-    private void loadScreen(String resource) {
+    public void initMatch(Player p1, Player p2) {
+        if (playAsWhite) {
+            loadScreen("play-view.fxml");
+        } else {
+            loadScreen("rev-play-view.fxml");
+        }
+        Platform.runLater(() -> {
+            pc.initMatch(p1, p2);
+        });
+    }
+
+    public void loadScreen(String resource) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(resource));
             switch (resource) {
-                case "play-view.fxml" -> {
+                case "offline-view.fxml" -> {
                     root.setCenter(loader.load());
+                    this.oc = loader.getController();
+                    oc.setMainController(this);
+                }
+                case "play-view.fxml", "rev-play-view.fxml" -> {
+                    root.setCenter(loader.load());
+                    this.pc = loader.getController();
+                    if (oc != null) {
+                        this.pc.setComputerElo(oc.compElo);
+                        this.pc.setComputerName(oc.compName);
+                    }
                     btnOffline.setDisable(true);
                     btnRewind.setDisable(false);
                     gamebtn.setVisible(true);
-                    this.pc = loader.getController();
                 }
                 case "online-view.fxml" -> {
 

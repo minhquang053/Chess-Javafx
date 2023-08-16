@@ -5,6 +5,7 @@ public class ComputerPlayer extends Player {
     private int depth;
     public ComputerPlayer(boolean isWhiteSide, int waitTime) {
         this.isHumanPlayer = false;
+        this.isWhiteSide = isWhiteSide;
         setWaitTime(waitTime);
     }
 

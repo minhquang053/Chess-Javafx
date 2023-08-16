@@ -509,21 +509,30 @@
       </AnchorPane>
    </center>
    <right>
-      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="303.0" BorderPane.alignment="TOP_CENTER">
+      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="300.0" BorderPane.alignment="TOP_CENTER">
          <top>
-            <BorderPane prefHeight="60.0" prefWidth="318.0" BorderPane.alignment="CENTER">
+            <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="300.0" BorderPane.alignment="CENTER">
                <left>
-                  <Label fx:id="p2clock" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="110.0" style="-fx-background-color: black;" text="10:00" textAlignment="CENTER" textFill="#fcfcfc" wrapText="true" BorderPane.alignment="CENTER">
+                  <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="110.0" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets left="25.0" />
                      </BorderPane.margin>
-                     <font>
-                        <Font name="Ebrima Bold" size="25.0" />
-                     </font>
-                  </Label>
+                     <children>
+                        <Label fx:id="p2clock" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="110.0" style="-fx-background-color: black;" text="10:00" textAlignment="CENTER" textFill="#fcfcfc" visible="false" wrapText="true">
+                           <font>
+                              <Font name="Ebrima Bold" size="25.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="eloLabel" alignment="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="110.0" style="-fx-background-color: transparent; -fx-text-fill: white;" textAlignment="CENTER" textFill="#fcfcfc" wrapText="true">
+                           <font>
+                              <Font name="Ebrima Bold" size="25.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </StackPane>
                </left>
                <center>
-                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="44.0" prefWidth="169.0" text="Player 2" textAlignment="CENTER" textFill="WHITE" wrapText="true" BorderPane.alignment="CENTER">
+                  <Label fx:id="opName" alignment="CENTER" contentDisplay="CENTER" prefHeight="44.0" prefWidth="169.0" text="Player 2" textAlignment="CENTER" textFill="WHITE" wrapText="true" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets />
                      </BorderPane.margin>
@@ -535,10 +544,13 @@
                <BorderPane.margin>
                   <Insets top="5.0" />
                </BorderPane.margin>
+               <bottom>
+                  <Pane fx:id="whiteStack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="300.0" BorderPane.alignment="CENTER" />
+               </bottom>
             </BorderPane>
          </top>
          <bottom>
-            <BorderPane prefHeight="60.0" prefWidth="308.0" BorderPane.alignment="CENTER">
+            <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="300.0" BorderPane.alignment="CENTER">
                <right>
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="44.0" prefWidth="168.0" text="You" textAlignment="CENTER" textFill="WHITE" wrapText="true" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
@@ -550,7 +562,7 @@
                   </Label>
                </right>
                <center>
-                  <Label fx:id="p1clock" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="110.0" style="-fx-background-color: white;" text="10:00" textFill="#282828" BorderPane.alignment="CENTER">
+                  <Label fx:id="p1clock" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="110.0" style="-fx-background-color: white;" text="10:00" textFill="#282828" visible="false" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets left="25.0" />
                      </BorderPane.margin>
@@ -562,8 +574,30 @@
                <BorderPane.margin>
                   <Insets bottom="5.0" />
                </BorderPane.margin>
+               <top>
+                  <Pane fx:id="blackStack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="300.0" BorderPane.alignment="CENTER" />
+               </top>
             </BorderPane>
          </bottom>
+         <right>
+            <ListView fx:id="blackList" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="580.0" prefWidth="135.0" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin></ListView>
+         </right>
+         <center>
+            <ListView id="wlist" fx:id="whiteList" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="580.0" prefWidth="110.0" style="-fx-font-weight: bold;" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets bottom="15.0" top="15.0" />
+               </BorderPane.margin></ListView>
+         </center>
+         <left>
+            <ListView id="nlist" fx:id="numList" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="580.0" prefWidth="60.0" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets left="3.0" />
+               </BorderPane.margin>
+            </ListView>
+         </left>
       </BorderPane>
    </right>
 </BorderPane>

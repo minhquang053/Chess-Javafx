@@ -6,6 +6,7 @@ import javafx.scene.image.ImageView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Game {
     private Player[] players;
@@ -96,34 +97,36 @@ public class Game {
         var lastMove = getLastMovePlayed();
         if (lastMove.isPromotion()) {
             switch (pieceName) {
-                case "wq.png" -> {
+                case "wq.png", "Q" -> {
                     lastMove.getEnd().setPiece(new Queen(true));
                 }
-                case "wn.png" -> {
+                case "wn.png", "N" -> {
                     lastMove.getEnd().setPiece(new Knight(true));
                 }
-                case "wb.png" -> {
+                case "wb.png", "B" -> {
                     lastMove.getEnd().setPiece(new Bishop(true));
                 }
-                case "wr.png" -> {
+                case "wr.png", "R" -> {
                     lastMove.getEnd().setPiece(new Rook(true));
                 }
-                case "bq.png" -> {
+                case "bq.png", "q" -> {
                     lastMove.getEnd().setPiece(new Queen(false));
                 }
-                case "bn.png" -> {
+                case "bn.png", "n" -> {
                     lastMove.getEnd().setPiece(new Knight(false));
                 }
-                case "bb.png" -> {
+                case "bb.png", "b" -> {
                     lastMove.getEnd().setPiece(new Bishop(false));
                 }
-                case "br.png" -> {
+                case "br.png", "r" -> {
                     lastMove.getEnd().setPiece(new Rook(false));
                 }
             }
+            lastMove.setPiecePromote(lastMove.getEnd().getPiece());
             if (kingInDanger(!lastMove.getEnd().getPiece().isWhite())) {
                 lastMove.setCheckMove(true);
             }
+            pc.updateMoveList(lastMove);
         }
     }
 
@@ -525,7 +528,9 @@ public class Game {
             }
             // Pawn promote
             if (move.getEnd().getY() == 7 || move.getEnd().getY() == 0) {
-                pc.displayPromoteChoice(srcPiece.isWhite(), move.getEnd().getX(), move.getEnd().getY());
+                if (currentTurn instanceof HumanPlayer) {
+                    pc.displayPromoteChoice(srcPiece.isWhite(), move.getEnd().getX(), move.getEnd().getY());
+                }
                 move.setPromotion(true);
             }
             // En passant
@@ -706,6 +711,126 @@ public class Game {
             e.printStackTrace();
         }
         return fen.toString();
+    }
 
+    public Character pieceToUnicode(Piece piece) {
+        if (piece instanceof Pawn) {
+            return ' ';
+        } else if (piece instanceof Knight) {
+            if (piece.isWhite()) {
+                return '♞';
+            }
+            return '♘';
+        } else if (piece instanceof Rook) {
+            if (piece.isWhite()) {
+                return '♜';
+            }
+            return '♖';
+        } else if (piece instanceof Bishop) {
+            if (piece.isWhite()) {
+                return '♝';
+            }
+            return '♗';
+        } else if (piece instanceof King) {
+            if (piece.isWhite()) {
+                return '♚';
+            }
+            return '♔';
+        } else if (piece instanceof Queen) {
+            if (piece.isWhite()) {
+                return '♛';
+            }
+            return '♕';
+        }
+        return null;
+    }
+
+    public String moveToPGN(Move move) {
+        if (move.isCastlingMove()) {
+            String ret = "O-O";
+            if (move.getEnd().getX() == 2) {
+                ret += "-O";
+            }
+            if (move.isCheckMove()) {
+                ret += "+";
+            }
+            return ret;
+        }
+        var pieceMoved = move.getPieceMoved();
+        var pieceKilled = move.getPieceKilled();
+        var start = move.getStart();
+        var end = move.getEnd();
+        String fromX = "";
+        String fromY = "";
+        String fromPiece = String.format("%c", pieceToUnicode(pieceMoved));
+        String to = String.format("%c%d", 'a' + end.getX(), end.getY() + 1);
+        if (pieceKilled != null) {
+            to = "x" + to;
+        }
+        if (move.isPromotion()) {
+            fromPiece = "";
+            to += "=" + String.format("%c", pieceToUnicode(move.getPiecePromote()));
+        }
+        if (move.isCheckMove()) {
+            to += "+";
+        }
+        try {
+            end.setPiece(pieceKilled);
+            start.setPiece(pieceMoved);
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    var box = board.getBox(i, j);
+                    var piece = box.getPiece();
+                    if (piece == null || piece == pieceMoved) {
+                        continue;
+                    }
+                    if (piece.isWhite() != pieceMoved.isWhite()) {
+                        continue;
+                    }
+                    if (!piece.getClass().equals(pieceMoved.getClass())) {
+                        continue;
+                    }
+                    if (piece.canMove(board, box, end)) {
+                        if (i == start.getX() && fromY.isEmpty()) {
+                            fromY = String.format("%d", start.getY() + 1);
+                        }
+                        if (j == start.getY() && fromX.isEmpty()) {
+                            fromX = String.format("%c", 'a' + start.getX());
+                        }
+                        if (i != start.getX() && j != start.getY()) {
+                            return fromPiece
+                                    + String.format("%c", 'a' + start.getX())
+                                    + to;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "err";
+        } finally {
+            if (move.isPromotion()) {
+                end.setPiece(move.getPiecePromote());
+            } else {
+                end.setPiece(pieceMoved);
+            }
+            start.setPiece(null);
+        }
+        return fromPiece + fromX + fromY + to;
+    }
+
+    public ArrayList<String> getPieceUrlSet() {
+        var res = new ArrayList<String>();
+        res.add(pieceToUrl(new Pawn(true)));
+        res.add(pieceToUrl(new Pawn(false)));
+        res.add(pieceToUrl(new Bishop(true)));
+        res.add(pieceToUrl(new Bishop(false)));
+        res.add(pieceToUrl(new Knight(true)));
+        res.add(pieceToUrl(new Knight(false)));
+        res.add(pieceToUrl(new Rook(true)));
+        res.add(pieceToUrl(new Rook(false)));
+        res.add(pieceToUrl(new Queen(true)));
+        res.add(pieceToUrl(new Queen(false)));
+        return res;
     }
 }

@@ -93,11 +93,13 @@ public class Stockfish {
     public String getBestMove(String fen, int waitTime) {
         sendCommand("position fen " + fen);
         sendCommand(String.format("go movetime %d", waitTime));
-        try {
-            return getOutput(waitTime + 20).split("bestmove ")[1].split(" ")[0];
-        } catch (Exception e) {
-            return getOutput(waitTime+ 20).split("bestmove ")[1].split(" ")[0];
+        while (true) {
+            try {
+                return getOutput(waitTime + 20).split("bestmove ")[1].split(" ")[0];
+            } catch (Exception e) {
+            }
         }
+
 
     }
 

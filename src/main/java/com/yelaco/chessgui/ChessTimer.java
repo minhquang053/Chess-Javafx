@@ -18,8 +18,13 @@ public class ChessTimer extends TimerTask {
         this.tw = totalTime;
         this.tb = totalTime;
         this.cs = cs;
-        this.pwclock = cs.p1clock;
-        this.pbclock = cs.p2clock;
+        if (cs.player1) {
+            this.pwclock = cs.p1clock;
+            this.pbclock = cs.p2clock;
+        } else {
+            this.pwclock = cs.p2clock;
+            this.pbclock = cs.p1clock;
+        }
         pwclock.setStyle("-fx-background-color:  rgba(255,255,255,255); -fx-text-fill: rgba(38,36,52,255)");
         pbclock.setStyle("-fx-background-color:  rgba(152,152,150,255); -fx-text-fill: rgba(97,97,94,255)");
         setClock();

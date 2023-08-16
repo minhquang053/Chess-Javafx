@@ -18,6 +18,7 @@ public class ChessApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ChessApplication.class.getResource("main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
+        scene.getStylesheets().add(getClass().getResource("lisStyle.css").toExternalForm());
         stage.setTitle("Chess.vn");
         stage.setScene(scene);
         stage.setResizable(false);

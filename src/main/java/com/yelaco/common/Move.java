@@ -9,6 +9,7 @@ public class Move {
     private Spot end;
     private Piece pieceMoved;
     private Piece pieceKilled;
+    private Piece piecePromote;
     private Spot spotKilled;
     private Spot[] rookCastle;
     private boolean isCastlingMove = false;
@@ -48,6 +49,14 @@ public class Move {
     }
     public void setPieceKilled(Piece pieceKilled) {
         this.pieceKilled = pieceKilled;
+    }
+
+    public void setPiecePromote(Piece piecePromote) {
+        this.piecePromote = piecePromote;
+    }
+
+    public Piece getPiecePromote() {
+        return this.piecePromote;
     }
 
     public boolean isCastlingMove() {

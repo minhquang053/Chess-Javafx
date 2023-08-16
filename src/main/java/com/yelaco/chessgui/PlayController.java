@@ -2,20 +2,18 @@ package com.yelaco.chessgui;
 
 import com.yelaco.common.*;
 import com.yelaco.engine.Stockfish;
+import com.yelaco.piece.King;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -23,12 +21,14 @@ import java.util.*;
 
 public class PlayController implements Initializable {
     public Game game;
+    private String computerElo;
+    private String computerName;
     Player currentPlayer;
     private boolean makingMove = false;
     private ImageView movingPiece = null;
     ImageView promotingPiece = null;
     private String rootPath = null;
-    private boolean player1;
+    public boolean player1;
 
     private ArrayList<ImageView> showMoveImgView;
     private HashMap<BorderPane, String> canMovePane;
@@ -39,6 +39,9 @@ public class PlayController implements Initializable {
     private BorderPane[][] spots = new BorderPane[8][8];
     private ChessTimer task;
     private Timer timer;
+    private ArrayList<String> whiteCaptured;
+    private ArrayList<String> blackCaptured;
+    private ArrayList<String> pieceOrder;
 
     private Stockfish sfClient;
 
@@ -46,6 +49,8 @@ public class PlayController implements Initializable {
     private AnchorPane apane;
     @FXML
     private GridPane gpane;
+    @FXML
+    private Label opName;
 
     // player white clock
     @FXML
@@ -59,6 +64,19 @@ public class PlayController implements Initializable {
     HBox rootProm;
     BorderPane showingProm;
 
+    @FXML
+    public ListView<String> whiteList;
+    @FXML
+    public ListView<String> blackList;
+    @FXML
+    public ListView<String> numList;
+    @FXML
+    public Pane whiteStack;
+    @FXML
+    public Pane blackStack;
+    @FXML
+    public Label eloLabel;
+
     public void displayResult() {
         rootProm.setVisible(true);
         var resultDialog = new Dialog<String>();
@@ -70,13 +88,27 @@ public class PlayController implements Initializable {
 
     public void displayGameOver() {
         apane.setDisable(true);
-        timer.cancel();
-        timer.purge();
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
         displayResult();
 
     }
 
+    public void setComputerElo(String computerElo) {
+        this.computerElo = computerElo;
+    }
+
+    public void setComputerName(String compName) {
+        this.computerName = compName;
+    }
+
     public void displayPromoteChoice(boolean isWhite, int col, int row) {
+        if (!player1) {
+            col = 7 - col;
+            row = 7 - row;
+        }
         try {
             String res = null;
             if (isWhite && row == 7) {
@@ -259,6 +291,10 @@ public class PlayController implements Initializable {
 
                 if (moveStat == MoveStatus.SUCCESS) {
                     updateBoard();
+                    if (!game.getLastMovePlayed().isPromotion()) {
+                        updateMoveList(game.getLastMovePlayed());
+                    }
+
                     if (currentPlayer instanceof ComputerPlayer) {
                         new Thread(new Runnable() {
                             @Override
@@ -299,13 +335,119 @@ public class PlayController implements Initializable {
         }
     }
 
+    private void updateCaptureStack(Move move) {
+        var pieceKilled = move.getPieceKilled();
+        if (pieceKilled == null) {
+            return;
+        }
+        var pieceUrl = game.pieceToUrl(move.getPieceKilled());
+        if (pieceKilled.isWhite()) {
+            if (whiteCaptured.contains(pieceUrl)) {
+                whiteCaptured.add(whiteCaptured.lastIndexOf(pieceUrl) + 1, pieceUrl);
+            } else {
+                whiteCaptured.add(whiteCaptured.size(), pieceUrl);
+                whiteCaptured.sort(new Comparator<String>() {
+                    @Override
+                    public int compare(String o1, String o2) {
+                        return pieceOrder.indexOf(o1) - pieceOrder.indexOf(o2);
+                    }
+                });
+            }
+        } else {
+            if (blackCaptured.contains(pieceUrl)) {
+                blackCaptured.add(blackCaptured.lastIndexOf(pieceUrl) + 1, pieceUrl);
+            } else {
+                blackCaptured.add(blackCaptured.size(), pieceUrl);
+                blackCaptured.sort(new Comparator<String>() {
+                    @Override
+                    public int compare(String o1, String o2) {
+                        return pieceOrder.indexOf(o1) - pieceOrder.indexOf(o2);
+                    }
+                });
+            }
+        }
+        drawCaptureStack();
+    }
+
+    private void drawCaptureStack() {
+        String lstUrl = "";
+        double lstX = -15.0;
+        while (whiteStack.getChildren().size() > whiteCaptured.size()) {
+            whiteStack.getChildren().remove(whiteStack.getChildren().size() - 1);
+        }
+        while (blackStack.getChildren().size() > blackCaptured.size()) {
+            blackStack.getChildren().remove(blackStack.getChildren().size() - 1);
+        }
+        for (int i = 0; i < whiteCaptured.size(); i++) {
+            if (i == whiteStack.getChildren().size()) {
+                whiteStack.getChildren().add(new ImageView());
+            }
+            var imgv = (ImageView) whiteStack.getChildren().get(i);
+            imgv.setImage(new Image(whiteCaptured.get(i)));
+            imgv.setFitHeight(30.0);
+            imgv.setFitWidth(30.0);
+            if (!whiteCaptured.get(i).equals(lstUrl)) {
+                lstX += 25.0;
+            } else {
+                lstX += 8.0;
+            }
+            imgv.setLayoutX(lstX);
+            lstUrl = whiteCaptured.get(i);
+        }
+        lstUrl = "";
+        lstX = -15.0;
+        for (int i = 0; i < blackCaptured.size(); i++) {
+            if (i == blackStack.getChildren().size()) {
+                blackStack.getChildren().add(new ImageView());
+            }
+            var imgv = (ImageView) blackStack.getChildren().get(i);
+            imgv.setImage(new Image(blackCaptured.get(i)));
+            imgv.setFitHeight(30.0);
+            imgv.setFitWidth(30.0);
+            if (!blackCaptured.get(i).equals(lstUrl)) {
+                lstX += 25.0;
+            } else {
+                lstX += 8.0;
+            }
+            imgv.setLayoutX(lstX);
+            lstUrl = blackCaptured.get(i);
+        }
+    }
+
+    public void updateMoveList(Move move) {
+        int size = whiteList.getItems().size();
+        if (size == 0) {
+            Node n1 = whiteList.lookup(".scroll-bar");
+            if (n1 instanceof ScrollBar whiteBar) {;
+                Node n2 = blackList.lookup(".scroll-bar");
+                if (n2 instanceof ScrollBar blackBar) {
+                    Node n3 = numList.lookup(".scroll-bar"); {
+                        if (n3 instanceof ScrollBar numBar) {
+                            whiteBar.valueProperty().bindBidirectional(blackBar.valueProperty());
+                            numBar.valueProperty().bindBidirectional(whiteBar.valueProperty());
+                        }
+                    }
+                }
+            }
+        }
+        if (move.getPieceMoved().isWhite()) {
+            numList.getItems().add(size, String.format("%3d", size + 1) + ".");
+            whiteList.getItems().add(size, game.moveToPGN(move));
+            blackList.getItems().add(size, "");
+        } else {
+            blackList.getItems().set(size - 1, game.moveToPGN(move));
+        }
+        updateCaptureStack(move);
+    }
+
     private void updateBoard() {
         currentPlayer = game.getCurrentTurn();
-        task.switchTurn(currentPlayer.isWhiteSide);
+        if (task != null) {
+            task.switchTurn(currentPlayer.isWhiteSide);
+        }
 
         // move piece
-        var movesPlayed = game.getMovesPlayed();
-        var ltmove = movesPlayed.get(movesPlayed.size()-1);
+        var ltmove = game.getLastMovePlayed();
 
         // audio
         if (!ltmove.isPromotion()) {
@@ -328,6 +470,9 @@ public class PlayController implements Initializable {
             var spotKilled = (ImageView) spots[ltmove.getSpotKilled().getX()][ltmove.getSpotKilled().getY()].getCenter();
             spotKilled.setImage(null);
         } else if (ltmove.isPromotion()) {
+            if (ltmove.getPiecePromote() != null) {
+                endView.setImage(new Image(game.pieceToUrl(ltmove.getPiecePromote())));
+            }
             promotingPiece = endView;
         }
         highlightMove(true,
@@ -361,12 +506,27 @@ public class PlayController implements Initializable {
             return;
         }
 
-        String move = sfClient.getBestMove(game.boardToFen(), ((ComputerPlayer) currentPlayer).getWaitTime());
+        if (!game.getMovesPlayed().isEmpty() && game.getLastMovePlayed().isPromotion()) {
+            var lastMove = game.getLastMovePlayed();
+            while (lastMove.getPiecePromote() == null) {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        String fen = game.boardToFen();
+        if (currentPlayer.isWhiteSide) {
+            fen += " w";
+        }
+        String move = sfClient.getBestMove(fen, ((ComputerPlayer) currentPlayer).getWaitTime());
 
 
         try {
             while (move == null) {
-                Thread.sleep(((ComputerPlayer) currentPlayer).getWaitTime());
+                Thread.sleep(((ComputerPlayer) currentPlayer).getWaitTime() + 30);
             }
             if (!highlightMovePane.isEmpty()) {
                 highlightMove(false, -1, -1, -1, -1, highlightMovePane.keySet().stream().toList().get(0),
@@ -374,8 +534,21 @@ public class PlayController implements Initializable {
             }
             var coords = filterInput(move.substring(0, 2), move.substring(2, 4));
             game.playerMove(currentPlayer, coords[0], coords[1], coords[2], coords[3]);
-            updateBoard();
+
             Platform.runLater(() -> {
+                if (game.getLastMovePlayed().isPromotion()) {
+                    if (move.length() == 5) {
+                        var promoteTo = String.format("%c", move.charAt(4));
+                        if (!player1) {
+                            promoteTo = promoteTo.toUpperCase();
+                        }
+                        game.setPromote(promoteTo);
+                    }
+                    makeMoveSound(game.getLastMovePlayed());
+                } else {
+                    updateMoveList(game.getLastMovePlayed());
+                }
+                updateBoard();
                 if (game.isOver()) {
                     displayGameOver();
                 }
@@ -390,6 +563,7 @@ public class PlayController implements Initializable {
             return;
         }
         var lastMove = game.getLastMovePlayed();
+
         var startView = (ImageView) spots[lastMove.getStart().getX()][lastMove.getStart().getY()].getCenter();
         var endView = (ImageView) spots[lastMove.getEnd().getX()][lastMove.getEnd().getY()].getCenter();
         startView.setImage(endView.getImage());
@@ -416,11 +590,15 @@ public class PlayController implements Initializable {
                     lastMove.getPieceKilled() == null ? null : new Image(game.pieceToUrl(lastMove.getPieceKilled()))
             );
         }
+
+        whiteCaptured.remove(game.pieceToUrl(lastMove.getPieceKilled()));
+        blackCaptured.remove(game.pieceToUrl(lastMove.getPieceKilled()));
+        drawCaptureStack();
         game.reverseLastMove();
     }
 
-    public void setOpponent(Player opponent) {
-        game.getPlayers()[1] = opponent;
+    public void setMatch(Player p1, Player p2) {
+        game.init(p1, p2);
     }
 
     @Override
@@ -429,19 +607,6 @@ public class PlayController implements Initializable {
         tmp[tmp.length-1] = "";
         rootPath = String.join("/", tmp);
 
-        game = new Game();
-        game.init(new HumanPlayer(true), new ComputerPlayer(false,  300));
-        game.setPlayController(this);
-        game.setRootPath(rootPath);
-        currentPlayer = game.getCurrentTurn();
-
-        int idx = 0;
-        for (int j = 7; j >= 0; j--) {
-            for (int i = 0; i < 8; i++) {
-                spots[i][j] = (BorderPane) gpane.getChildren().get(idx++);
-            }
-        }
-
         showMoveImgView = new ArrayList<>();
         canMovePane = new HashMap<>();
 
@@ -449,18 +614,60 @@ public class PlayController implements Initializable {
 
         ChessAudio.setup(rootPath);
 
-        playSound(SoundEffect.START_GAME);
-
-        timer = new Timer();
-        task = new ChessTimer(600,this);
-        timer.schedule(task, 500, 1000 );
-
-        player1 = currentPlayer.isWhiteSide;
-
         highlightMovePane = new HashMap<>();
 
-        sfClient = new Stockfish();
-        sfClient.startEngine();
-        sfClient.sendCommand("uci");
+        whiteCaptured = new ArrayList<>();
+        blackCaptured = new ArrayList<>();
+    }
+
+    public void initMatch(Player p1, Player p2) {
+        game = new Game();
+        game.init(p1, p2);
+        game.setPlayController(this);
+        game.setRootPath(rootPath);
+        currentPlayer = game.getCurrentTurn();
+
+        playSound(SoundEffect.START_GAME);
+
+        player1 = p1.isWhiteSide;
+
+        pieceOrder = game.getPieceUrlSet();
+
+        if (p2 instanceof ComputerPlayer) {
+            eloLabel.setText(computerElo);
+            opName.setText(computerName);
+            sfClient = new Stockfish();
+            sfClient.startEngine();
+            sfClient.sendCommand("uci");
+            sfClient.sendCommand("setoption name UCI_LimitStrength value true");
+            sfClient.sendCommand("setoption name UCI_Elo value " + computerElo);
+        } else {
+            Platform.runLater(() -> {
+                p1clock.setVisible(true);
+                p2clock.setVisible(true);
+            });
+            timer = new Timer();
+            task = new ChessTimer(600,this);
+            timer.schedule(task, 500, 1000 );
+        }
+
+        if (p1.isWhiteSide) {
+            int idx = 0;
+            for (int j = 7; j >= 0; j--) {
+                for (int i = 0; i < 8; i++) {
+                    spots[i][j] = (BorderPane) gpane.getChildren().get(idx++);
+                }
+            }
+        } else {
+            int idx = 0;
+            for (int j = 0; j < 8; j++) {
+                for (int i = 7; i >= 0; i--) {
+                    spots[i][j] = (BorderPane) gpane.getChildren().get(idx++);
+                }
+            }
+            Platform.runLater(() -> {
+                botMove();
+            });
+        }
     }
 }
