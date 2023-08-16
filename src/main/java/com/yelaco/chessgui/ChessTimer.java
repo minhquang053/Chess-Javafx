@@ -13,6 +13,7 @@ public class ChessTimer extends TimerTask {
     private PlayController cs;
     private Label pwclock;
     private Label pbclock;
+    private String radiusStyle = "-fx-border-radius: 5%; -fx-background-radius: 5%;";
 
     public ChessTimer(int totalTime, PlayController cs) {
         this.tw = totalTime;
@@ -25,8 +26,8 @@ public class ChessTimer extends TimerTask {
             this.pwclock = cs.p2clock;
             this.pbclock = cs.p1clock;
         }
-        pwclock.setStyle("-fx-background-color:  rgba(255,255,255,255); -fx-text-fill: rgba(38,36,52,255)");
-        pbclock.setStyle("-fx-background-color:  rgba(152,152,150,255); -fx-text-fill: rgba(97,97,94,255)");
+        pwclock.setStyle("-fx-background-color:  rgba(255,255,255,255); -fx-text-fill: rgba(38,36,52,255);" + radiusStyle);
+        pbclock.setStyle("-fx-background-color:  rgba(152,152,150,255); -fx-text-fill: rgba(97,97,94,255);" + radiusStyle);
         setClock();
     }
 
@@ -52,11 +53,11 @@ public class ChessTimer extends TimerTask {
     public void switchTurn(boolean color) {
         this.isWhite = color;
         if (isWhite) {
-            pwclock.setStyle("-fx-background-color:  rgba(255,255,255,255); -fx-text-fill: rgba(38,36,52,255)");
-            pbclock.setStyle("-fx-background-color:  rgba(152,152,150,255); -fx-text-fill: rgba(97,97,94,255)");
+            pwclock.setStyle("-fx-background-color:  rgba(255,255,255,255); -fx-text-fill: rgba(38,36,52,255);" + radiusStyle);
+            pbclock.setStyle("-fx-background-color:  rgba(152,152,150,255); -fx-text-fill: rgba(97,97,94,255);" + radiusStyle);
         } else {
-            pwclock.setStyle("-fx-background-color:  rgba(152,152,150,255); -fx-text-fill: rgba(97,97,94,255)");
-            pbclock.setStyle("-fx-background-color:  rgba(38,36,33,255); -fx-text-fill: white");
+            pwclock.setStyle("-fx-background-color:  rgba(152,152,150,255); -fx-text-fill: rgba(97,97,94,255);" + radiusStyle);
+            pbclock.setStyle("-fx-background-color:  rgba(38,36,33,255); -fx-text-fill: white;" + radiusStyle);
         }
     }
 
